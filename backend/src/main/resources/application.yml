@@ -23,6 +23,7 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
+      continue-on-error: true
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

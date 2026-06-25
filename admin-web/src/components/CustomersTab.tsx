@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Customer, CustomerTier, Order, TicketPackage } from '../types';
 import { TRANSLATIONS } from '../translations';
+import CJKInput from './CJKInput';
 
 interface CustomersTabProps {
   language: 'en' | 'zh';
@@ -440,11 +441,11 @@ export default function CustomersTab({
               {/* Name */}
               <div className="space-y-1">
                 <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.customerName} *</label>
-                <input
+                <CJKInput
                   type="text"
                   placeholder="e.g. Michael Scott"
                   value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
+                  onValueChange={setFormName}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                   required
                 />
@@ -453,11 +454,11 @@ export default function CustomersTab({
               {/* Phone */}
               <div className="space-y-1">
                 <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.phone} *</label>
-                <input
+                <CJKInput
                   type="text"
                   placeholder="e.g. +1 555-0100"
                   value={formPhone}
-                  onChange={(e) => setFormPhone(e.target.value)}
+                  onValueChange={setFormPhone}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                   required
                 />
@@ -466,11 +467,11 @@ export default function CustomersTab({
               {/* Address */}
               <div className="space-y-1">
                 <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.address} *</label>
-                <input
+                <CJKInput
                   type="text"
                   placeholder="e.g. 1725 Slough Avenue, Scranton"
                   value={formAddress}
-                  onChange={(e) => setFormAddress(e.target.value)}
+                  onValueChange={setFormAddress}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                   required
                 />

@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import { TRANSLATIONS } from '../translations';
+import CJKInput from './CJKInput';
 
 interface SettingsTabProps {
   language: 'en' | 'zh';
@@ -156,10 +157,10 @@ export default function SettingsTab({
               <div className="space-y-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-500 uppercase tracking-wider block">{language === 'en' ? 'Company Name' : '公司法定全称'}</label>
-                  <input
+                  <CJKInput
                     type="text"
                     value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
+                    onValueChange={setCompanyName}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 outline-none"
                   />
                 </div>
@@ -168,10 +169,10 @@ export default function SettingsTab({
                   <label className="font-semibold text-slate-500 uppercase tracking-wider block">{language === 'en' ? 'Headquarters Address' : '注册经营地址'}</label>
                   <div className="relative">
                     <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
+                    <CJKInput
                       type="text"
                       value={companyAddress}
-                      onChange={(e) => setCompanyAddress(e.target.value)}
+                      onValueChange={setCompanyAddress}
                       className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2.5 text-xs font-semibold text-slate-700 outline-none"
                     />
                   </div>

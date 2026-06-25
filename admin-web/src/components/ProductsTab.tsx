@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { TRANSLATIONS } from '../translations';
+import CJKInput from './CJKInput';
 
 interface ProductsTabProps {
   language: 'en' | 'zh';
@@ -402,22 +403,22 @@ export default function ProductsTab({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.productNameEn} *</label>
-                  <input
+                  <CJKInput
                     type="text"
                     placeholder="e.g. Mineral Water Case"
                     value={formName}
-                    onChange={(e) => setFormName(e.target.value)}
+                    onValueChange={setFormName}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none"
                     required
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.productNameZh} *</label>
-                  <input
+                  <CJKInput
                     type="text"
                     placeholder="例如：箱装矿泉水"
                     value={formNameZh}
-                    onChange={(e) => setFormNameZh(e.target.value)}
+                    onValueChange={setFormNameZh}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none"
                     required
                   />

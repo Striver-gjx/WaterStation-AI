@@ -27,6 +27,9 @@ import {
   INITIAL_REDEMPTION_LOGS 
 } from './mockData';
 import { TRANSLATIONS } from './translations';
+import { customerApi } from './api/customer';
+import { productApi } from './api/product';
+import { orderApi } from './api/order';
 
 // Import child views
 import DashboardTab from './components/DashboardTab';
@@ -74,6 +77,67 @@ export default function App() {
 
   // Mobile sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Load data from backend API (overrides localStorage/mock data)
+  useEffect(() => {
+    const loadFromBackend = async () => {
+      try {
+        const [custRes, prodRes, orderRes]: any[] = await Promise.all([
+          customerApi.list({ page: 1, size: 100 }),
+          productApi.list(),
+          orderApi.list({ page: 1, size: 100 }),
+        ]);
+
+        if (custRes?.data?.list?.length > 0) {
+          const tierMap: Record<string, CustomerTier> = {
+            'REGULAR': CustomerTier.Standard, 'VIP': CustomerTier.VIP, 'ENTERPRISE': CustomerTier.Gold,
+          };
+          setCustomers(custRes.data.list.map((c: any) => ({
+            id: `CUST-${String(c.id).padStart(3, '0')}`,
+            name: c.name, phone: c.phone, address: c.address,
+            tier: tierMap[c.tier] || CustomerTier.Standard,
+            outstandingBalance: c.outstandingBalance || 0,
+            activeTickets: c.activeTickets || 0,
+            lifetimeOrders: c.lifetimeOrders || 0,
+            lastOrderDate: c.createdAt?.split('T')[0] || '2026-06-25',
+          })));
+        }
+
+        if (prodRes?.data?.length > 0) {
+          setProducts(prodRes.data.map((p: any) => ({
+            id: `PROD-${String(p.id).padStart(3, '0')}`,
+            name: p.name, nameZh: p.name,
+            category: 'Barrels' as const,
+            volume: p.specification || '20L',
+            price: p.unitPrice, stock: p.stock, maxStock: p.maxStock,
+            status: p.status === 'IN_STOCK' ? 'In Stock' : p.status === 'LOW_STOCK' ? 'Low Stock' : 'Out of Stock',
+            imageUrl: p.imageUrl || '',
+          })));
+        }
+
+        if (orderRes?.data?.list?.length > 0) {
+          const statusMap: Record<string, OrderStatus> = {
+            'PENDING_PAYMENT': OrderStatus.Pending, 'PAID': OrderStatus.Paid,
+            'COMPLETED': OrderStatus.Paid, 'CANCELLED': OrderStatus.Cancelled,
+            'DELIVERED': OrderStatus.Paid,
+          };
+          setOrders(orderRes.data.list.map((o: any) => ({
+            id: o.orderNo || `ORD-${o.id}`,
+            customerId: `CUST-${String(o.customerId).padStart(3, '0')}`,
+            customerName: o.customerName || '', productId: 'PROD-001', productName: '',
+            quantity: 1, totalAmount: o.totalAmount,
+            status: statusMap[o.status] || OrderStatus.Pending,
+            deliveryStatus: DeliveryStatus.Pending,
+            orderDate: o.createdAt?.split('T')[0] || '2026-06-25',
+            paymentMethod: o.paymentMethod || 'Cash',
+          })));
+        }
+      } catch (e) {
+        console.log('Backend not available, using local data');
+      }
+    };
+    loadFromBackend();
+  }, []);
 
   // Sync to localStorage
   useEffect(() => {

@@ -1,0 +1,132 @@
+CREATE TABLE IF NOT EXISTS customer (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address VARCHAR(500) NOT NULL DEFAULT '',
+    address_detail VARCHAR(200) DEFAULT '',
+    latitude DECIMAL(10, 7) DEFAULT NULL,
+    longitude DECIMAL(10, 7) DEFAULT NULL,
+    tier VARCHAR(20) NOT NULL DEFAULT 'REGULAR',
+    company_name VARCHAR(200) DEFAULT NULL,
+    outstanding_balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    active_tickets INT NOT NULL DEFAULT 0,
+    lifetime_orders INT NOT NULL DEFAULT 0,
+    total_spent DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
+    remark VARCHAR(500) DEFAULT NULL,
+    status TINYINT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS product (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    category VARCHAR(50) NOT NULL DEFAULT 'water',
+    specification VARCHAR(100) DEFAULT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    cost_price DECIMAL(10, 2) DEFAULT NULL,
+    stock INT NOT NULL DEFAULT 0,
+    max_stock INT NOT NULL DEFAULT 1000,
+    min_stock_alert INT NOT NULL DEFAULT 50,
+    image_url VARCHAR(500) DEFAULT NULL,
+    description TEXT DEFAULT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'IN_STOCK',
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS driver (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    id_card VARCHAR(20) DEFAULT NULL,
+    avatar_url VARCHAR(500) DEFAULT NULL,
+    vehicle_type VARCHAR(50) DEFAULT NULL,
+    vehicle_plate VARCHAR(20) DEFAULT NULL,
+    service_area VARCHAR(200) DEFAULT NULL,
+    max_daily_orders INT NOT NULL DEFAULT 50,
+    current_latitude DECIMAL(10, 7) DEFAULT NULL,
+    current_longitude DECIMAL(10, 7) DEFAULT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'OFFLINE',
+    total_deliveries INT NOT NULL DEFAULT 0,
+    rating DECIMAL(3, 2) DEFAULT 5.00,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `order` (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_no VARCHAR(32) NOT NULL,
+    customer_id BIGINT NOT NULL,
+    driver_id BIGINT DEFAULT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    paid_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    status VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
+    payment_method VARCHAR(20) DEFAULT NULL,
+    delivery_address VARCHAR(500) NOT NULL,
+    delivery_latitude DECIMAL(10, 7) DEFAULT NULL,
+    delivery_longitude DECIMAL(10, 7) DEFAULT NULL,
+    scheduled_date VARCHAR(20) DEFAULT NULL,
+    scheduled_time_slot VARCHAR(20) DEFAULT NULL,
+    remark VARCHAR(500) DEFAULT NULL,
+    cancel_reason VARCHAR(500) DEFAULT NULL,
+    completed_at TIMESTAMP DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS order_item (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    product_name VARCHAR(200) NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    quantity INT NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS delivery (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    driver_id BIGINT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    pickup_time TIMESTAMP DEFAULT NULL,
+    delivered_time TIMESTAMP DEFAULT NULL,
+    delivery_photo_url VARCHAR(500) DEFAULT NULL,
+    sign_photo_url VARCHAR(500) DEFAULT NULL,
+    gps_latitude DECIMAL(10, 7) DEFAULT NULL,
+    gps_longitude DECIMAL(10, 7) DEFAULT NULL,
+    empty_buckets_collected INT NOT NULL DEFAULT 0,
+    customer_signed TINYINT NOT NULL DEFAULT 0,
+    remark VARCHAR(500) DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ticket_package (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    total_tickets INT NOT NULL,
+    remaining_tickets INT NOT NULL,
+    price_paid DECIMAL(10, 2) NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    purchase_date VARCHAR(20) NOT NULL,
+    expire_date VARCHAR(20) DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ticket_redemption (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    package_id BIGINT NOT NULL,
+    customer_id BIGINT NOT NULL,
+    order_id BIGINT DEFAULT NULL,
+    redeemed_qty INT NOT NULL,
+    redemption_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    remark VARCHAR(200) DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

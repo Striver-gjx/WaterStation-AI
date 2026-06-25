@@ -1,0 +1,29 @@
+{
+  "name": "waterstation-desktop",
+  "version": "1.0.0",
+  "description": "水站管理系统桌面客户端",
+  "main": "dist-electron/main.js",
+  "author": "WaterStation",
+  "license": "MIT",
+  "scripts": {
+    "build:ts": "tsc",
+    "build:win": "npm run build:ts && electron-builder --win",
+    "build:mac": "npm run build:ts && electron-builder --mac",
+    "build:all": "npm run build:ts && electron-builder --win --mac",
+    "start": "npm run build:ts && electron .",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "typescript": "~5.8.2"
+  },
+  "allowScripts": {
+    "electron": true,
+    "esbuild": true
+  }
+}

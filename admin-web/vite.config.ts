@@ -18,6 +18,17 @@ export default defineConfig(() => {
         '/api': {
           target: 'http://localhost:8080',
           changeOrigin: true,
+          configure: (proxy) => {
+            // Remove Vite's default error logger to prevent terminal spam
+            // when backend is not running (frontend gracefully falls back to local data)
+            proxy.removeAllListeners('error');
+            proxy.on('error', (_err, _req, res) => {
+              if (res && 'writeHead' in res && !(res as any).headersSent) {
+                (res as any).writeHead(502, { 'Content-Type': 'application/json' });
+                (res as any).end(JSON.stringify({ code: 502, message: 'Backend unavailable' }));
+              }
+            });
+          },
         },
       },
     },

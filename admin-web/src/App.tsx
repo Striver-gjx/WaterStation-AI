@@ -14,7 +14,9 @@ import {
   ExternalLink,
   ChevronRight,
   Menu,
-  X
+  X,
+  AlertTriangle,
+  XCircle
 } from 'lucide-react';
 
 // Import custom types & datasets
@@ -28,8 +30,6 @@ import {
 } from './mockData';
 import { TRANSLATIONS } from './translations';
 import { customerApi } from './api/customer';
-import { productApi } from './api/product';
-import { orderApi } from './api/order';
 
 // Import child views
 import DashboardTab from './components/DashboardTab';
@@ -78,66 +78,103 @@ export default function App() {
   // Mobile sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Load data from backend API (overrides localStorage/mock data)
+  // Backend connection status
+  const [backendError, setBackendError] = useState<{
+    show: boolean;
+    message: string;
+    detail: string;
+    suggestions: string[];
+  } | null>(null);
+
+  // Load data from backend API (check connectivity only, never overwrite local edits)
   useEffect(() => {
-    const loadFromBackend = async () => {
+    let cancelled = false;
+    const checkBackend = async () => {
       try {
-        const [custRes, prodRes, orderRes]: any[] = await Promise.all([
-          customerApi.list({ page: 1, size: 100 }),
-          productApi.list(),
-          orderApi.list({ page: 1, size: 100 }),
-        ]);
-
-        if (custRes?.data?.list?.length > 0) {
-          const tierMap: Record<string, CustomerTier> = {
-            'REGULAR': CustomerTier.Standard, 'VIP': CustomerTier.VIP, 'ENTERPRISE': CustomerTier.Gold,
-          };
-          setCustomers(custRes.data.list.map((c: any) => ({
-            id: `CUST-${String(c.id).padStart(3, '0')}`,
-            name: c.name, phone: c.phone, address: c.address,
-            tier: tierMap[c.tier] || CustomerTier.Standard,
-            outstandingBalance: c.outstandingBalance || 0,
-            activeTickets: c.activeTickets || 0,
-            lifetimeOrders: c.lifetimeOrders || 0,
-            lastOrderDate: c.createdAt?.split('T')[0] || '2026-06-25',
-          })));
+        await customerApi.list({ page: 1, size: 1 });
+        if (!cancelled) {
+          setBackendError(null);
         }
+      } catch (e: unknown) {
+        if (!cancelled) {
+          const err = e as Error & { response?: { status?: number }; code?: string };
+          let message: string;
+          let detail: string;
+          let suggestions: string[];
 
-        if (prodRes?.data?.length > 0) {
-          setProducts(prodRes.data.map((p: any) => ({
-            id: `PROD-${String(p.id).padStart(3, '0')}`,
-            name: p.name, nameZh: p.name,
-            category: 'Barrels' as const,
-            volume: p.specification || '20L',
-            price: p.unitPrice, stock: p.stock, maxStock: p.maxStock,
-            status: p.status === 'IN_STOCK' ? 'In Stock' : p.status === 'LOW_STOCK' ? 'Low Stock' : 'Out of Stock',
-            imageUrl: p.imageUrl || '',
-          })));
-        }
+          if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error')) {
+            message = language === 'zh'
+              ? '无法连接到后端服务'
+              : 'Cannot connect to backend service';
+            detail = language === 'zh'
+              ? '前端尝试请求 http://localhost:8080 但连接被拒绝。后端服务可能未启动或端口未监听。'
+              : 'Frontend attempted to reach http://localhost:8080 but the connection was refused. The backend service may not be running.';
+            suggestions = language === 'zh'
+              ? [
+                  '确认后端服务已启动（cd backend && mvn spring-boot:run）',
+                  '检查后端是否监听在 8080 端口',
+                  '检查是否有防火墙阻止本地连接',
+                  '查看后端启动日志是否有报错',
+                ]
+              : [
+                  'Ensure backend is running (cd backend && mvn spring-boot:run)',
+                  'Verify backend is listening on port 8080',
+                  'Check if a firewall is blocking local connections',
+                  'Review backend startup logs for errors',
+                ];
+          } else if (err.response?.status === 502) {
+            message = language === 'zh'
+              ? '后端服务不可用（502 Bad Gateway）'
+              : 'Backend unavailable (502 Bad Gateway)';
+            detail = language === 'zh'
+              ? '开发代理服务器无法将请求转发到后端。这通常意味着后端进程未运行或已崩溃。'
+              : 'The dev proxy could not forward requests to the backend. This typically means the backend process is not running or has crashed.';
+            suggestions = language === 'zh'
+              ? [
+                  '启动后端服务：cd backend && mvn spring-boot:run',
+                  '如果后端曾启动过，检查是否因异常退出',
+                  '检查 8080 端口是否被其他进程占用（lsof -i :8080）',
+                ]
+              : [
+                  'Start backend: cd backend && mvn spring-boot:run',
+                  'If backend was previously running, check if it crashed',
+                  'Check if port 8080 is occupied (lsof -i :8080)',
+                ];
+          } else if (err.response?.status === 401 || err.response?.status === 403) {
+            message = language === 'zh'
+              ? '后端认证失败'
+              : 'Backend authentication failed';
+            detail = language === 'zh'
+              ? `请求返回 HTTP ${err.response.status}，可能是认证 Token 缺失或已过期。`
+              : `Request returned HTTP ${err.response.status}. Auth token may be missing or expired.`;
+            suggestions = language === 'zh'
+              ? ['检查登录状态', '清除浏览器缓存后重试']
+              : ['Check login status', 'Clear browser cache and retry'];
+          } else {
+            message = language === 'zh'
+              ? '后端请求失败'
+              : 'Backend request failed';
+            detail = err.message || (language === 'zh' ? '未知错误' : 'Unknown error');
+            suggestions = language === 'zh'
+              ? [
+                  '检查后端服务是否正常运行',
+                  '查看浏览器控制台（F12）获取详细错误信息',
+                  '确认 API 接口路径是否正确',
+                ]
+              : [
+                  'Check if backend service is running properly',
+                  'Open browser console (F12) for detailed error info',
+                  'Confirm API endpoint paths are correct',
+                ];
+          }
 
-        if (orderRes?.data?.list?.length > 0) {
-          const statusMap: Record<string, OrderStatus> = {
-            'PENDING_PAYMENT': OrderStatus.Pending, 'PAID': OrderStatus.Paid,
-            'COMPLETED': OrderStatus.Paid, 'CANCELLED': OrderStatus.Cancelled,
-            'DELIVERED': OrderStatus.Paid,
-          };
-          setOrders(orderRes.data.list.map((o: any) => ({
-            id: o.orderNo || `ORD-${o.id}`,
-            customerId: `CUST-${String(o.customerId).padStart(3, '0')}`,
-            customerName: o.customerName || '', productId: 'PROD-001', productName: '',
-            quantity: 1, totalAmount: o.totalAmount,
-            status: statusMap[o.status] || OrderStatus.Pending,
-            deliveryStatus: DeliveryStatus.Pending,
-            orderDate: o.createdAt?.split('T')[0] || '2026-06-25',
-            paymentMethod: o.paymentMethod || 'Cash',
-          })));
+          setBackendError({ show: true, message, detail, suggestions });
         }
-      } catch (e) {
-        console.log('Backend not available, using local data');
       }
     };
-    loadFromBackend();
-  }, []);
+    checkBackend();
+    return () => { cancelled = true; };
+  }, [language]);
 
   // Sync to localStorage
   useEffect(() => {
@@ -559,6 +596,51 @@ export default function App() {
 
         </div>
       </header>
+
+      {/* Backend Connection Error Banner */}
+      {backendError?.show && (
+        <div className="bg-amber-50 border-b border-amber-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-bold text-amber-800">
+                    {backendError.message}
+                  </h3>
+                  <button
+                    onClick={() => setBackendError(prev => prev ? { ...prev, show: false } : null)}
+                    className="p-1 hover:bg-amber-100 rounded text-amber-500 hover:text-amber-700 transition shrink-0"
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-xs text-amber-700 mt-1">
+                  {backendError.detail}
+                </p>
+                <p className="text-[11px] text-amber-600 mt-0.5 italic">
+                  {language === 'zh'
+                    ? '当前使用本地演示数据，所有操作仅保存在浏览器中。后端启动成功后刷新页面即可加载真实数据。'
+                    : 'Currently using local demo data. All operations are saved in browser only. Refresh after backend starts to load real data.'}
+                </p>
+                <div className="mt-2 bg-amber-100/60 border border-amber-200/80 rounded-lg p-2.5">
+                  <p className="text-[11px] font-semibold text-amber-800 mb-1.5">
+                    {language === 'zh' ? '建议检查：' : 'Suggested checks:'}
+                  </p>
+                  <ul className="space-y-1">
+                    {backendError.suggestions.map((s, i) => (
+                      <li key={i} className="text-[11px] text-amber-700 flex items-start gap-1.5">
+                        <span className="text-amber-500 font-bold mt-px">{i + 1}.</span>
+                        <span>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Container Workspace */}
       <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col lg:flex-row p-4 gap-6">

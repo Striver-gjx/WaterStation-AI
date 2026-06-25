@@ -53,8 +53,8 @@ export default function CustomersTab({
   const [formPhone, setFormPhone] = useState('');
   const [formAddress, setFormAddress] = useState('');
   const [formTier, setFormTier] = useState<CustomerTier>(CustomerTier.Standard);
-  const [formOutstanding, setFormOutstanding] = useState(0);
-  const [formTickets, setFormTickets] = useState(0);
+  const [formOutstanding, setFormOutstanding] = useState('');
+  const [formTickets, setFormTickets] = useState('');
   const [formError, setFormError] = useState('');
 
   // Record Payment state in sidebar
@@ -90,8 +90,8 @@ export default function CustomersTab({
       phone: formPhone,
       address: formAddress,
       tier: formTier,
-      outstandingBalance: formOutstanding,
-      activeTickets: formTickets
+      outstandingBalance: parseFloat(formOutstanding) || 0,
+      activeTickets: parseInt(formTickets) || 0
     });
 
     setIsRegisterOpen(false);
@@ -99,8 +99,8 @@ export default function CustomersTab({
     setFormPhone('');
     setFormAddress('');
     setFormTier(CustomerTier.Standard);
-    setFormOutstanding(0);
-    setFormTickets(0);
+    setFormOutstanding('');
+    setFormTickets('');
   };
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
@@ -499,7 +499,7 @@ export default function CustomersTab({
                     min="0"
                     step="0.01"
                     value={formOutstanding}
-                    onChange={(e) => setFormOutstanding(Math.max(0, parseFloat(e.target.value) || 0))}
+                    onChange={(e) => setFormOutstanding(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none font-bold"
                   />
                 </div>
@@ -512,7 +512,7 @@ export default function CustomersTab({
                   type="number"
                   min="0"
                   value={formTickets}
-                  onChange={(e) => setFormTickets(Math.max(0, parseInt(e.target.value) || 0))}
+                  onChange={(e) => setFormTickets(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none"
                 />
               </div>

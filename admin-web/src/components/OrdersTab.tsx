@@ -52,7 +52,7 @@ export default function OrdersTab({
   // Form States for creating a new order
   const [formCustomerId, setFormCustomerId] = useState('');
   const [formProductId, setFormProductId] = useState('');
-  const [formQty, setFormQty] = useState(1);
+  const [formQty, setFormQty] = useState('1');
   const [formPaymentMethod, setFormPaymentMethod] = useState('WeChat Pay');
   const [formStatus, setFormStatus] = useState<OrderStatus>(OrderStatus.Paid);
   const [formDelivery, setFormDelivery] = useState<DeliveryStatus>(DeliveryStatus.Pending);
@@ -107,7 +107,7 @@ export default function OrdersTab({
     // Reset fields
     setFormCustomerId('');
     setFormProductId('');
-    setFormQty(1);
+    setFormQty('1');
     setFormError('');
     setIsCreateOpen(false);
   };

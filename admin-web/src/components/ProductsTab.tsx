@@ -45,24 +45,24 @@ export default function ProductsTab({
   const [formNameZh, setFormNameZh] = useState('');
   const [formCategory, setFormCategory] = useState<Product['category']>('Barrels');
   const [formVolume, setFormVolume] = useState('20L');
-  const [formPrice, setFormPrice] = useState(28.00);
-  const [formStock, setFormStock] = useState(100);
-  const [formMaxStock, setFormMaxStock] = useState(200);
+  const [formPrice, setFormPrice] = useState('28');
+  const [formStock, setFormStock] = useState('100');
+  const [formMaxStock, setFormMaxStock] = useState('200');
   const [formImage, setFormImage] = useState('');
   const [formError, setFormError] = useState('');
 
   // Selected edit product states
   const editingProduct = products.find(p => p.id === editingProductId);
-  const [editPrice, setEditPrice] = useState(0);
-  const [editStock, setEditStock] = useState(0);
-  const [editMaxStock, setEditMaxStock] = useState(0);
+  const [editPrice, setEditPrice] = useState('');
+  const [editStock, setEditStock] = useState('');
+  const [editMaxStock, setEditMaxStock] = useState('');
 
   // Handle open editor panel
   const handleStartEdit = (prod: Product) => {
     setEditingProductId(prod.id);
-    setEditPrice(prod.price);
-    setEditStock(prod.stock);
-    setEditMaxStock(prod.maxStock);
+    setEditPrice(String(prod.price));
+    setEditStock(String(prod.stock));
+    setEditMaxStock(String(prod.maxStock));
   };
 
   // Filter products
@@ -80,7 +80,7 @@ export default function ProductsTab({
     e.preventDefault();
     setFormError('');
 
-    if (!formName || !formNameZh || !formVolume || formPrice < 0 || formStock < 0 || formMaxStock < formStock) {
+    if (!formName || !formNameZh || !formVolume || (parseFloat(formPrice) || 0) < 0 || (parseInt(formStock) || 0) < 0 || (parseInt(formMaxStock) || 0) < (parseInt(formStock) || 0)) {
       setFormError(t.inputRequired);
       return;
     }
@@ -93,9 +93,9 @@ export default function ProductsTab({
       nameZh: formNameZh,
       category: formCategory,
       volume: formVolume,
-      price: formPrice,
-      stock: formStock,
-      maxStock: formMaxStock,
+      price: parseFloat(formPrice) || 0,
+      stock: parseInt(formStock) || 0,
+      maxStock: parseInt(formMaxStock) || 0,
       imageUrl: formImage.trim() || defaultImg
     });
 
@@ -104,9 +104,9 @@ export default function ProductsTab({
     setFormNameZh('');
     setFormCategory('Barrels');
     setFormVolume('20L');
-    setFormPrice(28.00);
-    setFormStock(100);
-    setFormMaxStock(200);
+    setFormPrice('28');
+    setFormStock('100');
+    setFormMaxStock('200');
     setFormImage('');
   };
 
@@ -115,9 +115,9 @@ export default function ProductsTab({
     if (!editingProductId) return;
 
     onUpdateProduct(editingProductId, {
-      price: editPrice,
-      stock: editStock,
-      maxStock: editMaxStock
+      price: parseFloat(editPrice) || 0,
+      stock: parseInt(editStock) || 0,
+      maxStock: parseInt(editMaxStock) || 0
     });
 
     setEditingProductId(null);
@@ -318,7 +318,7 @@ export default function ProductsTab({
                     step="0.01"
                     min="0"
                     value={editPrice}
-                    onChange={(e) => setEditPrice(Math.max(0, parseFloat(e.target.value) || 0))}
+                    onChange={(e) => setEditPrice(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-8 pr-3 py-2 text-xs font-bold text-slate-700 outline-none"
                     required
                   />
@@ -333,7 +333,7 @@ export default function ProductsTab({
                     type="number"
                     min="0"
                     value={editStock}
-                    onChange={(e) => setEditStock(Math.max(0, parseInt(e.target.value) || 0))}
+                    onChange={(e) => setEditStock(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none"
                     required
                   />
@@ -345,7 +345,7 @@ export default function ProductsTab({
                     type="number"
                     min="1"
                     value={editMaxStock}
-                    onChange={(e) => setEditMaxStock(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => setEditMaxStock(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none"
                     required
                   />
@@ -462,7 +462,7 @@ export default function ProductsTab({
                     step="0.01"
                     min="0"
                     value={formPrice}
-                    onChange={(e) => setFormPrice(Math.max(0, parseFloat(e.target.value) || 0))}
+                    onChange={(e) => setFormPrice(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-2 py-2 text-xs text-slate-700 font-bold outline-none"
                     required
                   />
@@ -473,7 +473,7 @@ export default function ProductsTab({
                     type="number"
                     min="0"
                     value={formStock}
-                    onChange={(e) => setFormStock(Math.max(0, parseInt(e.target.value) || 0))}
+                    onChange={(e) => setFormStock(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-2 py-2 text-xs text-slate-700 font-bold outline-none"
                     required
                   />
@@ -484,7 +484,7 @@ export default function ProductsTab({
                     type="number"
                     min="1"
                     value={formMaxStock}
-                    onChange={(e) => setFormMaxStock(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => setFormMaxStock(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-2 py-2 text-xs text-slate-700 font-bold outline-none"
                     required
                   />

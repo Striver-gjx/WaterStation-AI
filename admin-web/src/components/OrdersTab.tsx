@@ -75,11 +75,11 @@ export default function OrdersTab({
 
   // Calculate fields for creating form
   const selectedFormProduct = products.find(p => p.id === formProductId);
-  const calculatedTotal = selectedFormProduct ? selectedFormProduct.price * formQty : 0;
+  const calculatedTotal = selectedFormProduct ? selectedFormProduct.price * (parseInt(formQty) || 0) : 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formCustomerId || !formProductId || formQty < 1) {
+    if (!formCustomerId || !formProductId || (parseInt(formQty) || 0) < 1) {
       setFormError(t.inputRequired);
       return;
     }
@@ -97,7 +97,7 @@ export default function OrdersTab({
       customerName: cust.name,
       productId: formProductId,
       productName: prod.name,
-      quantity: formQty,
+      quantity: parseInt(formQty) || 1,
       totalAmount: calculatedTotal,
       status: formStatus,
       deliveryStatus: formDelivery,
@@ -442,7 +442,7 @@ export default function OrdersTab({
                     type="number"
                     min="1"
                     value={formQty}
-                    onChange={(e) => setFormQty(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => setFormQty(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none font-bold"
                   />
                 </div>

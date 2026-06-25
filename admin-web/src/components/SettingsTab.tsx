@@ -33,8 +33,8 @@ export default function SettingsTab({
   // Local settings states
   const [latency, setLatency] = useState(250);
   const [notifications, setNotifications] = useState(true);
-  const [deliveryFee, setDeliveryFee] = useState(15.00);
-  const [taxRate, setTaxRate] = useState(6.0);
+  const [deliveryFee, setDeliveryFee] = useState('15');
+  const [taxRate, setTaxRate] = useState('6');
   const [companyName, setCompanyName] = useState(t.companyName);
   const [companyAddress, setCompanyAddress] = useState(t.companyAddress);
 
@@ -124,7 +124,7 @@ export default function SettingsTab({
                       type="number"
                       step="0.01"
                       value={deliveryFee}
-                      onChange={(e) => setDeliveryFee(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => setDeliveryFee(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none"
                     />
                   </div>
@@ -139,7 +139,7 @@ export default function SettingsTab({
                       type="number"
                       step="0.1"
                       value={taxRate}
-                      onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => setTaxRate(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none"
                     />
                   </div>

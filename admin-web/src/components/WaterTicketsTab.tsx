@@ -48,7 +48,7 @@ export default function WaterTicketsTab({
   // REDEMPTION HUB Form State
   const [redCustomerId, setRedCustomerId] = useState('');
   const [redPackageId, setRedPackageId] = useState('');
-  const [redQty, setRedQty] = useState(1);
+  const [redQty, setRedQty] = useState('1');
   const [redDriver, setRedDriver] = useState('Robert Vance');
   const [redNotes, setRedNotes] = useState('');
   const [redSuccess, setRedSuccess] = useState('');
@@ -58,7 +58,7 @@ export default function WaterTicketsTab({
   const [sellCustomerId, setSellCustomerId] = useState('');
   const [sellProductId, setSellProductId] = useState('');
   const [sellTicketsQty, setSellTicketsQty] = useState(10);
-  const [sellPrice, setSellPrice] = useState(240);
+  const [sellPrice, setSellPrice] = useState('240');
   const [sellError, setSellError] = useState('');
 
   // 1. Calculations
@@ -97,7 +97,9 @@ export default function WaterTicketsTab({
       return;
     }
 
-    if (pkg.remainingTickets < redQty) {
+    const redQtyNum = parseInt(redQty) || 0;
+
+    if (pkg.remainingTickets < redQtyNum) {
       setRedError(
         language === 'en' 
           ? `Insufficient tickets. Remaining: ${pkg.remainingTickets}`
@@ -111,20 +113,20 @@ export default function WaterTicketsTab({
       customerId: redCustomerId,
       customerName: pkg.customerName,
       productName: pkg.productName,
-      redeemedQty: redQty,
-      remainingAfter: pkg.remainingTickets - redQty,
+      redeemedQty: redQtyNum,
+      remainingAfter: pkg.remainingTickets - redQtyNum,
       driverName: redDriver,
       notes: redNotes
     });
 
     setRedSuccess(
       language === 'en'
-        ? `Successfully redeemed ${redQty} tickets for ${pkg.customerName}!`
-        : `兑换成功！已扣减 ${pkg.customerName} ${redQty} 张水票。`
+        ? `Successfully redeemed ${redQtyNum} tickets for ${pkg.customerName}!`
+        : `兑换成功！已扣减 ${pkg.customerName} ${redQtyNum} 张水票。`
     );
 
     // Reset some states
-    setRedQty(1);
+    setRedQty('1');
     setRedNotes('');
     // Clear success after 3s
     setTimeout(() => setRedSuccess(''), 4000);
@@ -134,7 +136,7 @@ export default function WaterTicketsTab({
     e.preventDefault();
     setSellError('');
 
-    if (!sellCustomerId || !sellProductId || sellTicketsQty < 1 || sellPrice < 0) {
+    if (!sellCustomerId || !sellProductId || sellTicketsQty < 1 || (parseInt(sellPrice) || 0) < 0) {
       setSellError(t.inputRequired);
       return;
     }
@@ -154,7 +156,7 @@ export default function WaterTicketsTab({
       productName: prod.name,
       totalTickets: sellTicketsQty,
       remainingTickets: sellTicketsQty,
-      pricePaid: sellPrice
+      pricePaid: parseInt(sellPrice) || 0
     });
 
     setIsSellOpen(false);
@@ -181,7 +183,7 @@ export default function WaterTicketsTab({
     const prod = products.find(p => p.id === sellProductId);
     if (prod) {
       const basePrice = prod.price * qty * 0.85;
-      setSellPrice(Math.round(basePrice));
+      setSellPrice(String(Math.round(basePrice)));
     }
   };
 
@@ -281,7 +283,7 @@ export default function WaterTicketsTab({
                   min="1"
                   max={selectedPackage ? selectedPackage.remainingTickets : 100}
                   value={redQty}
-                  onChange={(e) => setRedQty(Math.max(1, parseInt(e.target.value) || 1))}
+                  onChange={(e) => setRedQty(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-xl px-3 py-2 text-xs text-slate-700 font-extrabold outline-none"
                 />
               </div>
@@ -530,7 +532,7 @@ export default function WaterTicketsTab({
                   <input
                     type="number"
                     value={sellPrice}
-                    onChange={(e) => setSellPrice(Math.max(0, parseInt(e.target.value) || 0))}
+                    onChange={(e) => setSellPrice(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-xl px-3 py-2 text-xs text-slate-700 font-extrabold outline-none"
                   />
                 </div>

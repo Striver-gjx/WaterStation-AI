@@ -1,0 +1,235 @@
+openapi: 3.0.3
+info:
+  title: WaterStation AI - Customer API
+  version: 1.0.0
+  description: 客户管理模块接口
+
+paths:
+  /api/v1/customers:
+    get:
+      summary: 客户列表
+      operationId: listCustomers
+      tags: [Customer]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: keyword
+          in: query
+          description: 搜索关键词（姓名/手机号）
+          schema: { type: string }
+        - name: tier
+          in: query
+          schema: { type: string, enum: [REGULAR, VIP, ENTERPRISE] }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResultCustomerVO'
+    post:
+      summary: 新增客户
+      operationId: createCustomer
+      tags: [Customer]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreateDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultCustomerVO'
+
+  /api/v1/customers/{id}:
+    get:
+      summary: 客户详情
+      operationId: getCustomer
+      tags: [Customer]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultCustomerDetailVO'
+    put:
+      summary: 更新客户
+      operationId: updateCustomer
+      tags: [Customer]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdateDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+    delete:
+      summary: 删除客户
+      operationId: deleteCustomer
+      tags: [Customer]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/customers/{id}/payment:
+    post:
+      summary: 客户还款
+      operationId: recordPayment
+      tags: [Customer]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount]
+              properties:
+                amount:
+                  type: number
+                  format: double
+                  description: 还款金额
+                remark:
+                  type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+components:
+  schemas:
+    ResultVoid:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data: {}
+
+    ResultCustomerVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/CustomerVO'
+
+    ResultCustomerDetailVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/CustomerDetailVO'
+
+    PageResultCustomerVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            total: { type: integer, format: int64 }
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomerVO'
+
+    CustomerVO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        phone: { type: string }
+        address: { type: string }
+        tier: { type: string, enum: [REGULAR, VIP, ENTERPRISE] }
+        outstandingBalance: { type: number, format: double }
+        activeTickets: { type: integer }
+        lifetimeOrders: { type: integer }
+        totalSpent: { type: number, format: double }
+        status: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    CustomerDetailVO:
+      allOf:
+        - $ref: '#/components/schemas/CustomerVO'
+        - type: object
+          properties:
+            companyName: { type: string }
+            addressDetail: { type: string }
+            latitude: { type: number }
+            longitude: { type: number }
+            remark: { type: string }
+            recentOrders:
+              type: array
+              items:
+                type: object
+            buckets:
+              type: array
+              items:
+                type: object
+
+    CustomerCreateDTO:
+      type: object
+      required: [name, phone, address]
+      properties:
+        name: { type: string, maxLength: 100 }
+        phone: { type: string, pattern: '^1[3-9]\d{9}$' }
+        address: { type: string, maxLength: 500 }
+        addressDetail: { type: string, maxLength: 200 }
+        tier: { type: string, enum: [REGULAR, VIP, ENTERPRISE], default: REGULAR }
+        companyName: { type: string }
+        remark: { type: string }
+
+    CustomerUpdateDTO:
+      type: object
+      properties:
+        name: { type: string, maxLength: 100 }
+        phone: { type: string }
+        address: { type: string }
+        addressDetail: { type: string }
+        tier: { type: string, enum: [REGULAR, VIP, ENTERPRISE] }
+        companyName: { type: string }
+        remark: { type: string }
+        status: { type: integer }

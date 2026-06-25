@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  title: WaterStation AI - Delivery API
+  version: 1.0.0
+  description: 配送管理模块接口
+
+paths:
+  /api/v1/drivers:
+    get:
+      summary: 配送员列表
+      operationId: listDrivers
+      tags: [Driver]
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [AVAILABLE, BUSY, OFFLINE] }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDriverList'
+    post:
+      summary: 新增配送员
+      operationId: createDriver
+      tags: [Driver]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverCreateDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDriverVO'
+
+  /api/v1/drivers/{id}:
+    get:
+      summary: 配送员详情
+      operationId: getDriver
+      tags: [Driver]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDriverVO'
+    put:
+      summary: 更新配送员
+      operationId: updateDriver
+      tags: [Driver]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdateDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/drivers/{id}/status:
+    put:
+      summary: 更新配送员状态
+      operationId: updateDriverStatus
+      tags: [Driver]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [AVAILABLE, BUSY, OFFLINE]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/drivers/{id}/location:
+    put:
+      summary: 上报配送员位置
+      operationId: updateDriverLocation
+      tags: [Driver]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [latitude, longitude]
+              properties:
+                latitude: { type: number, format: double }
+                longitude: { type: number, format: double }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/deliveries/{id}:
+    get:
+      summary: 配送记录详情
+      operationId: getDelivery
+      tags: [Delivery]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultDeliveryVO'
+
+  /api/v1/deliveries/{id}/pickup:
+    post:
+      summary: 配送员取货
+      operationId: pickupDelivery
+      tags: [Delivery]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/deliveries/{id}/complete:
+    post:
+      summary: 完成配送
+      operationId: completeDelivery
+      tags: [Delivery]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryCompleteDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+components:
+  schemas:
+    ResultVoid:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data: {}
+
+    ResultDriverVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/DriverVO'
+
+    ResultDriverList:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverVO'
+
+    ResultDeliveryVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/DeliveryVO'
+
+    DriverVO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        phone: { type: string }
+        vehicleType: { type: string }
+        vehiclePlate: { type: string }
+        serviceArea: { type: string }
+        maxDailyOrders: { type: integer }
+        status: { type: string }
+        totalDeliveries: { type: integer }
+        rating: { type: number, format: double }
+        currentLatitude: { type: number }
+        currentLongitude: { type: number }
+
+    DeliveryVO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        orderId: { type: integer, format: int64 }
+        driverId: { type: integer, format: int64 }
+        driverName: { type: string }
+        status: { type: string }
+        pickupTime: { type: string, format: date-time }
+        deliveredTime: { type: string, format: date-time }
+        deliveryPhotoUrl: { type: string }
+        signPhotoUrl: { type: string }
+        gpsLatitude: { type: number }
+        gpsLongitude: { type: number }
+        emptyBucketsCollected: { type: integer }
+        customerSigned: { type: boolean }
+
+    DriverCreateDTO:
+      type: object
+      required: [name, phone]
+      properties:
+        name: { type: string, maxLength: 100 }
+        phone: { type: string }
+        idCard: { type: string }
+        vehicleType: { type: string }
+        vehiclePlate: { type: string }
+        serviceArea: { type: string }
+        maxDailyOrders: { type: integer, default: 50 }
+
+    DriverUpdateDTO:
+      type: object
+      properties:
+        name: { type: string }
+        phone: { type: string }
+        vehicleType: { type: string }
+        vehiclePlate: { type: string }
+        serviceArea: { type: string }
+        maxDailyOrders: { type: integer }
+
+    DeliveryCompleteDTO:
+      type: object
+      required: [emptyBucketsCollected, gpsLatitude, gpsLongitude, customerSigned]
+      properties:
+        deliveryPhotoUrl:
+          type: string
+          description: 配送完成照片URL
+        signPhotoUrl:
+          type: string
+          description: 签收照片URL
+        gpsLatitude:
+          type: number
+          format: double
+        gpsLongitude:
+          type: number
+          format: double
+        emptyBucketsCollected:
+          type: integer
+          minimum: 0
+          description: 回收空桶数量
+        customerSigned:
+          type: boolean
+          description: 客户是否签收
+        remark:
+          type: string

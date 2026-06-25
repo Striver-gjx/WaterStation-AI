@@ -1,0 +1,304 @@
+openapi: 3.0.3
+info:
+  title: WaterStation AI - Ticket API
+  version: 1.0.0
+  description: 水票管理模块接口
+
+paths:
+  /api/v1/tickets/packages:
+    get:
+      summary: 水票套餐列表
+      operationId: listTicketPackages
+      tags: [Ticket]
+      parameters:
+        - name: customerId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [ACTIVE, DEPLETED, EXPIRED, CANCELLED] }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResultTicketPackageVO'
+    post:
+      summary: 售卖水票套餐
+      operationId: sellTicketPackage
+      tags: [Ticket]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketSellDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTicketPackageVO'
+
+  /api/v1/tickets/packages/{id}:
+    get:
+      summary: 套餐详情
+      operationId: getTicketPackage
+      tags: [Ticket]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTicketPackageDetailVO'
+
+  /api/v1/tickets/redeem:
+    post:
+      summary: 兑换水票
+      operationId: redeemTickets
+      tags: [Ticket]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketRedeemDTO'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/tickets/redemptions:
+    get:
+      summary: 兑换记录
+      operationId: listRedemptions
+      tags: [Ticket]
+      parameters:
+        - name: customerId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: packageId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResultRedemptionVO'
+
+  /api/v1/tickets/buckets:
+    get:
+      summary: 桶管理列表
+      operationId: listBuckets
+      tags: [Bucket]
+      parameters:
+        - name: customerId
+          in: query
+          schema: { type: integer, format: int64 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [WITH_CUSTOMER, RETURNED, DAMAGED, LOST] }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultBucketList'
+
+  /api/v1/tickets/buckets/issue:
+    post:
+      summary: 发放桶（收押金）
+      operationId: issueBucket
+      tags: [Bucket]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customerId, bucketType]
+              properties:
+                customerId: { type: integer, format: int64 }
+                bucketType: { type: string, default: STANDARD_20L }
+                depositAmount: { type: number, format: double }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+  /api/v1/tickets/buckets/{id}/return:
+    post:
+      summary: 退桶（退押金）
+      operationId: returnBucket
+      tags: [Bucket]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultVoid'
+
+components:
+  schemas:
+    ResultVoid:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data: {}
+
+    ResultTicketPackageVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/TicketPackageVO'
+
+    ResultTicketPackageDetailVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          $ref: '#/components/schemas/TicketPackageDetailVO'
+
+    PageResultTicketPackageVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            total: { type: integer, format: int64 }
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/TicketPackageVO'
+
+    PageResultRedemptionVO:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            total: { type: integer, format: int64 }
+            list:
+              type: array
+              items:
+                $ref: '#/components/schemas/RedemptionVO'
+
+    ResultBucketList:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BucketVO'
+
+    TicketPackageVO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        customerId: { type: integer, format: int64 }
+        customerName: { type: string }
+        productId: { type: integer, format: int64 }
+        productName: { type: string }
+        totalTickets: { type: integer }
+        remainingTickets: { type: integer }
+        pricePaid: { type: number, format: double }
+        unitPrice: { type: number, format: double }
+        status: { type: string }
+        purchaseDate: { type: string, format: date }
+        expireDate: { type: string, format: date }
+
+    TicketPackageDetailVO:
+      allOf:
+        - $ref: '#/components/schemas/TicketPackageVO'
+        - type: object
+          properties:
+            redemptions:
+              type: array
+              items:
+                $ref: '#/components/schemas/RedemptionVO'
+
+    RedemptionVO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        packageId: { type: integer, format: int64 }
+        customerId: { type: integer, format: int64 }
+        customerName: { type: string }
+        redeemedQty: { type: integer }
+        redemptionDate: { type: string, format: date-time }
+        remark: { type: string }
+
+    BucketVO:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        customerId: { type: integer, format: int64 }
+        customerName: { type: string }
+        bucketType: { type: string }
+        depositAmount: { type: number, format: double }
+        status: { type: string }
+        issuedDate: { type: string, format: date }
+        returnedDate: { type: string, format: date }
+
+    TicketSellDTO:
+      type: object
+      required: [customerId, productId, totalTickets, pricePaid]
+      properties:
+        customerId: { type: integer, format: int64 }
+        productId: { type: integer, format: int64 }
+        totalTickets: { type: integer, minimum: 1 }
+        pricePaid: { type: number, format: double }
+        expireDays: { type: integer, description: '有效天数，默认365', default: 365 }
+
+    TicketRedeemDTO:
+      type: object
+      required: [packageId, redeemedQty]
+      properties:
+        packageId: { type: integer, format: int64 }
+        redeemedQty: { type: integer, minimum: 1 }
+        remark: { type: string }

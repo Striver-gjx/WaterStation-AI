@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Plus, 
   Search, 
@@ -49,7 +49,23 @@ export default function ProductsTab({
   const [formStock, setFormStock] = useState('100');
   const [formMaxStock, setFormMaxStock] = useState('200');
   const [formImage, setFormImage] = useState('');
+  const [formImagePreview, setFormImagePreview] = useState('');
   const [formError, setFormError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setFormImage(dataUrl);
+      setFormImagePreview(dataUrl);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   // Selected edit product states
   const editingProduct = products.find(p => p.id === editingProductId);
@@ -108,6 +124,7 @@ export default function ProductsTab({
     setFormStock('100');
     setFormMaxStock('200');
     setFormImage('');
+    setFormImagePreview('');
   };
 
   const handleUpdateSubmit = (e: React.FormEvent) => {
@@ -495,15 +512,42 @@ export default function ProductsTab({
               <div className="space-y-1">
                 <label className="font-semibold text-slate-500 uppercase tracking-wider">{language === 'en' ? 'Product Image URL (Optional)' : '产品型录图片链接 (选填)'}</label>
                 <div className="relative">
-                  <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-blue-100 transition-colors group"
+                    title={language === 'en' ? 'Select image from folder' : '从文件夹选择图片'}
+                  >
+                    <ImageIcon className="w-4 h-4 text-blue-500 group-hover:text-blue-700" />
+                  </button>
                   <input
                     type="url"
-                    placeholder="https://..."
-                    value={formImage}
-                    onChange={(e) => setFormImage(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-700 outline-none"
+                    placeholder={language === 'en' ? 'https://... or click icon to select file' : 'https://... 或点击左侧图标从文件夹选择'}
+                    value={formImage.startsWith('data:') ? (language === 'en' ? '📎 Local image selected' : '📎 已选择本地图片') : formImage}
+                    onChange={(e) => { setFormImage(e.target.value); setFormImagePreview(''); }}
+                    className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-700 outline-none"
+                    readOnly={formImage.startsWith('data:')}
                   />
                 </div>
+                {formImagePreview && (
+                  <div className="mt-2 relative inline-block">
+                    <img src={formImagePreview} alt="Preview" className="w-20 h-20 object-cover rounded-lg border border-slate-200" />
+                    <button
+                      type="button"
+                      onClick={() => { setFormImage(''); setFormImagePreview(''); }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Actions */}

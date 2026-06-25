@@ -223,7 +223,7 @@ export default function OrdersTab({
                       <td className="py-3.5 px-4 text-slate-500">
                         {o.productName} <span className="text-[10px] text-slate-400">x{o.quantity}</span>
                       </td>
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-800">${o.totalAmount.toFixed(2)}</td>
+                      <td className="py-3.5 px-4 text-center font-bold text-slate-800">¥{o.totalAmount.toFixed(2)}</td>
                       <td className="py-3.5 px-4">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           o.status === OrderStatus.Paid ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
@@ -328,7 +328,7 @@ export default function OrdersTab({
                 </div>
                 <div className="border-t border-slate-200/50 pt-2 flex justify-between text-xs font-bold text-slate-800">
                   <span>{language === 'en' ? 'Total Amount' : '应收合计'}</span>
-                  <span>${selectedOrder.totalAmount.toFixed(2)}</span>
+                  <span>¥{selectedOrder.totalAmount.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -428,7 +428,7 @@ export default function OrdersTab({
                   <option value="" disabled>{language === 'en' ? '-- Select Product --' : '-- 选择产品 --'}</option>
                   {products.map(p => (
                     <option key={p.id} value={p.id}>
-                      {language === 'en' ? p.name : p.nameZh} - ${p.price.toFixed(2)}
+                      {language === 'en' ? p.name : p.nameZh} - ¥{p.price.toFixed(2)}
                     </option>
                   ))}
                 </select>
@@ -451,7 +451,7 @@ export default function OrdersTab({
                 <div className="space-y-1">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">{language === 'en' ? 'Calculated Total' : '计算总额'}</span>
                   <div className="h-10 bg-blue-50/50 border border-blue-100 rounded-xl px-3 flex items-center text-sm font-extrabold text-blue-700">
-                    ${calculatedTotal.toFixed(2)}
+                    ¥{calculatedTotal.toFixed(2)}
                   </div>
                 </div>
               </div>

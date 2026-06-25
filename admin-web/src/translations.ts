@@ -4,7 +4,7 @@
 
 export const TRANSLATIONS = {
   en: {
-    appName: 'AquaFlow Pro',
+    appName: 'Striver-DIY',
     dashboard: 'Dashboard',
     orders: 'Orders',
     waterTickets: 'Water Tickets',
@@ -145,7 +145,7 @@ export const TRANSLATIONS = {
     errorAction: 'Invalid inputs. Please verify and try again.'
   },
   zh: {
-    appName: 'AquaFlow Pro',
+    appName: 'Striver-DIY',
     dashboard: '运营概览',
     orders: '订单流水',
     waterTickets: '水票管理',

@@ -117,7 +117,7 @@ export default function CustomersTab({
     if (amt > selectedCustomer.outstandingBalance) {
       alert(
         language === 'en'
-          ? `Warning: Payment amount ($${amt}) exceeds outstanding balance ($${selectedCustomer.outstandingBalance}).`
+          ? `Warning: Payment amount (¥${amt}) exceeds outstanding balance (¥${selectedCustomer.outstandingBalance}).`
           : `实收金额 (¥${amt}) 大于未结款项 (¥${selectedCustomer.outstandingBalance})。`
       );
     }
@@ -126,7 +126,7 @@ export default function CustomersTab({
     setPaymentAmount('');
     setPaymentSuccess(
       language === 'en'
-        ? `Successfully registered payment of $${amt.toFixed(2)}!`
+        ? `Successfully registered payment of ¥${amt.toFixed(2)}!`
         : `账款收回成功！已登记 ¥${amt.toFixed(2)}。`
     );
 
@@ -241,7 +241,7 @@ export default function CustomersTab({
                         </span>
                       </td>
                       <td className={`py-3.5 px-4 text-right font-bold ${c.outstandingBalance > 0 ? 'text-rose-600' : 'text-slate-700'}`}>
-                        ${c.outstandingBalance.toFixed(2)}
+                        ¥{c.outstandingBalance.toFixed(2)}
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <ChevronRight className="w-4 h-4 text-slate-400 inline" />
@@ -298,7 +298,7 @@ export default function CustomersTab({
                 <div className="bg-slate-50/70 p-2.5 rounded-xl text-center">
                   <span className="text-[9px] text-slate-400 block font-semibold uppercase">{t.outstanding}</span>
                   <span className="text-sm font-bold text-slate-800 font-mono mt-0.5 block">
-                    ${selectedCustomer.outstandingBalance.toFixed(0)}
+                    ¥{selectedCustomer.outstandingBalance.toFixed(0)}
                   </span>
                 </div>
                 <div className="bg-slate-50/70 p-2.5 rounded-xl text-center">
@@ -387,7 +387,7 @@ export default function CustomersTab({
                           <p className="font-semibold text-slate-800">{o.productName} x{o.quantity}</p>
                           <p className="text-[9px] text-slate-400 font-mono">{o.orderDate} • {o.paymentMethod}</p>
                         </div>
-                        <span className="font-bold text-slate-700">${o.totalAmount.toFixed(2)}</span>
+                        <span className="font-bold text-slate-700">¥{o.totalAmount.toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
@@ -492,7 +492,7 @@ export default function CustomersTab({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-500 uppercase tracking-wider">{language === 'en' ? 'Initial Unpaid ($)' : '首笔欠款金额 (¥)'}</label>
+                  <label className="font-semibold text-slate-500 uppercase tracking-wider">{language === 'en' ? 'Initial Unpaid (¥)' : '首笔欠款金额 (¥)'}</label>
                   <input
                     type="number"
                     min="0"

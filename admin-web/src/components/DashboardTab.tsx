@@ -121,7 +121,7 @@ export default function DashboardTab({
           <div className="space-y-2">
             <p className="text-slate-500 text-xs font-semibold tracking-wide uppercase">{t.salesToday}</p>
             <h3 className="text-3xl font-extrabold text-slate-800">
-              ${salesToday.toFixed(2)}
+              ¥{salesToday.toFixed(2)}
             </h3>
             <span className="inline-flex items-center text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">
               +14.2% {t.vsYesterday}
@@ -203,7 +203,7 @@ export default function DashboardTab({
                   contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', color: '#fff', fontSize: '12px' }}
                   itemStyle={{ color: '#93c5fd' }}
                 />
-                <Area type="monotone" dataKey="sales" name={language === 'en' ? 'Sales Revenue ($)' : '销售额 (元)'} stroke="#3b82f6" strokeWidth={2.5} fillOpacity={1} fill="url(#colorSales)" />
+                <Area type="monotone" dataKey="sales" name={language === 'en' ? 'Sales Revenue (¥)' : '销售额 (¥)'} stroke="#3b82f6" strokeWidth={2.5} fillOpacity={1} fill="url(#colorSales)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

@@ -235,7 +235,7 @@ export default function ProductsTab({
                     <div>
                       <span className="text-[10px] text-slate-400 block font-semibold uppercase">{t.price}</span>
                       <span className="text-sm font-extrabold text-slate-800 font-mono">
-                        ${p.price.toFixed(2)}
+                        ¥{p.price.toFixed(2)}
                       </span>
                     </div>
                     <div className="text-right">
@@ -309,7 +309,7 @@ export default function ProductsTab({
 
               {/* Edit Price */}
               <div className="space-y-1">
-                <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.price} ($) *</label>
+                <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.price} (¥) *</label>
                 <div className="relative">
                   <DollarSign className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -455,7 +455,7 @@ export default function ProductsTab({
               {/* Pricing, Stocks, Limits */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.price} ($) *</label>
+                  <label className="font-semibold text-slate-500 uppercase tracking-wider">{t.price} (¥) *</label>
                   <input
                     type="number"
                     step="0.01"

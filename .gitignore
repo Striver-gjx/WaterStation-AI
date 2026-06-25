@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+*.js.map
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Java
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+*.log
+logs/
+
+# Data (local storage)
+data/
+
+# Test coverage
+coverage/
+.nyc_output/

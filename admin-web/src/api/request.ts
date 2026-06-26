@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+function getApiBase(): string {
+  const envBase = import.meta.env.VITE_API_BASE;
+  if (envBase) return envBase;
+
+  // In Electron (file:// protocol), the backend runs on localhost:18080
+  if (typeof window !== 'undefined' && window.location.protocol === 'file:') {
+    return 'http://127.0.0.1:18080';
+  }
+
+  return '';
+}
+
+const API_BASE = getApiBase();
 
 const request = axios.create({
   baseURL: `${API_BASE}/api/v1`,

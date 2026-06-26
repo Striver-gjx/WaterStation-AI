@@ -19,8 +19,7 @@ win:
     - target: nsis
       arch:
         - x64
-  icon: resources/icon.ico
-  artifactName: "${productName}-Setup-${version}.${ext}"
+  artifactName: "WaterStation-Setup-${version}.${ext}"
   extraResources:
     - from: ./extraResources/jre-win-x64/
       to: jre/
@@ -48,6 +47,7 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: "水站管理系统"
+  unicode: true
 
 dmg:
   backgroundColor: "#ffffff"

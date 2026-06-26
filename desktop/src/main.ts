@@ -171,7 +171,13 @@ ipcMain.handle('data:import', async () => {
 
 // IPC: Get data directory path
 ipcMain.handle('data:directory', () => {
-  const dataDir = path.join(app.getPath('userData'), 'data');
+  let dataDir: string;
+  if (process.platform === 'win32') {
+    const homeDrive = process.env['HOMEDRIVE'] || 'C:';
+    dataDir = path.join(homeDrive, 'WaterStation', 'data');
+  } else {
+    dataDir = path.join(app.getPath('userData'), 'data');
+  }
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
@@ -180,7 +186,13 @@ ipcMain.handle('data:directory', () => {
 
 // IPC: Open data directory in file explorer
 ipcMain.handle('data:open-directory', () => {
-  const dataDir = path.join(app.getPath('userData'), 'data');
+  let dataDir: string;
+  if (process.platform === 'win32') {
+    const homeDrive = process.env['HOMEDRIVE'] || 'C:';
+    dataDir = path.join(homeDrive, 'WaterStation', 'data');
+  } else {
+    dataDir = path.join(app.getPath('userData'), 'data');
+  }
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }

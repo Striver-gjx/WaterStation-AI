@@ -849,8 +849,9 @@ export default function App() {
           <div className="bg-slate-100 border border-slate-200/50 p-3 rounded-2xl space-y-1.5">
             <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider">{language === 'en' ? 'Quick Controls' : '快速操控'}</span>
             <button 
-              onClick={handleResetData}
-              className="w-full text-left py-1.5 px-2 bg-white hover:bg-blue-50 hover:text-blue-700 rounded-lg text-[11px] font-semibold transition border border-slate-200/50 block"
+              disabled
+              title="功能已禁用，防止误操作"
+              className="w-full text-left py-1.5 px-2 bg-gray-100 text-gray-400 rounded-lg text-[11px] font-semibold transition border border-slate-200/50 block cursor-not-allowed opacity-60"
             >
               🔄 {language === 'en' ? 'Restructure DB' : '还原初始库数据'}
             </button>

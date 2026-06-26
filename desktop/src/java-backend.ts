@@ -19,7 +19,15 @@ function getJarPath(): string {
 }
 
 function getDataDir(): string {
-  return path.join(app.getPath('userData'), 'data');
+  const userData = app.getPath('userData');
+  // On Windows, avoid issues with Chinese characters in AppData path
+  // by using a simpler path if possible
+  if (process.platform === 'win32') {
+    const homeDrive = process.env['HOMEDRIVE'] || 'C:';
+    const simpleDir = path.join(homeDrive, 'WaterStation', 'data');
+    return simpleDir;
+  }
+  return path.join(userData, 'data');
 }
 
 export function startBackend(port: number): void {
@@ -57,22 +65,28 @@ export function startBackend(port: number): void {
     throw new Error(`Backend JAR not found at: ${jarPath}`);
   }
 
-  const dbUrl = `jdbc:h2:file:${dataDir}/waterstation;MODE=MySQL;DB_CLOSE_DELAY=-1`;
+  // H2 JDBC URL requires forward slashes on all platforms
+  const dbFilePath = path.join(dataDir, 'waterstation').replace(/\\/g, '/');
+  const dbUrl = `jdbc:h2:file:${dbFilePath};MODE=MySQL;DB_CLOSE_DELAY=-1`;
 
   const args = [
     '-jar', jarPath,
     `--server.port=${port}`,
     `--spring.datasource.url=${dbUrl}`,
-    `--app.data-dir=${dataDir}`,
+    `--app.data-dir=${dataDir.replace(/\\/g, '/')}`,
     '--spring.h2.console.enabled=false',
   ];
 
-  console.log(`[Backend] Starting: ${jrePath} ${args.join(' ')}`);
+  console.log(`[Backend] Starting: ${jrePath}`);
+  console.log(`[Backend] JAR: ${jarPath}`);
+  console.log(`[Backend] Data dir: ${dataDir}`);
+  console.log(`[Backend] DB URL: ${dbUrl}`);
 
   backendProcess = spawn(jrePath, args, {
     cwd: dataDir,
     stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, JAVA_TOOL_OPTIONS: '' },
+    env: { ...process.env, JAVA_TOOL_OPTIONS: '', JAVA_HOME: '' },
+    windowsHide: true,
   });
 
   backendProcess.stdout?.on('data', (data: Buffer) => {
@@ -117,7 +131,8 @@ export function stopBackend(): Promise<void> {
       resolve();
     });
 
-    treekill(pid, 'SIGTERM');
+    // On Windows, SIGTERM is not supported; use tree-kill which handles it
+    treekill(pid, process.platform === 'win32' ? 'SIGKILL' : 'SIGTERM');
   });
 }
 

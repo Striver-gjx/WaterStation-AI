@@ -324,13 +324,9 @@ export default function SettingsTab({
               </div>
               <p className="text-slate-500 text-[11px] leading-relaxed">{t.resetWarning}</p>
               <button
-                onClick={() => {
-                  if (confirm(language === 'en' ? 'Revert to pristine mock data? Any custom customers, orders or redemptions will be deleted.' : '确认清空所有自定义数据并恢复至预设的 5 名核心演示客户？此操作不可撤销。')) {
-                    onResetData();
-                    alert(language === 'en' ? 'Data restored successfully!' : '初始演示数据已重构还原！');
-                  }
-                }}
-                className="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl transition text-center border border-rose-100"
+                disabled
+                title="功能已禁用，防止误操作"
+                className="w-full py-2 bg-gray-100 text-gray-400 font-bold rounded-xl transition text-center border border-gray-200 cursor-not-allowed opacity-60"
               >
                 {t.resetDataBtn}
               </button>

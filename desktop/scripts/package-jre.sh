@@ -34,9 +34,8 @@ echo ""
 
 # Clean previous output
 rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
 
-# Build JRE for current platform
+# Build JRE for current platform (jlink requires output dir to not exist)
 echo "Building minimal JRE for current platform..."
 "$JLINK" \
   --add-modules "$MODULES" \

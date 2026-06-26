@@ -35,6 +35,7 @@ mac:
   icon: resources/icon.icns
   category: public.app-category.business
   artifactName: "${productName}-${version}-mac.${ext}"
+  identity: null
   extraResources:
     - from: ./extraResources/jre/
       to: jre/
@@ -49,6 +50,7 @@ nsis:
   shortcutName: "水站管理系统"
 
 dmg:
+  backgroundColor: "#ffffff"
   contents:
     - x: 130
       y: 220

@@ -1,5 +1,6 @@
 import { ChildProcess, spawn } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 import http from 'http';
 import { app } from 'electron';
 import treekill = require('tree-kill');
@@ -28,6 +29,34 @@ export function startBackend(port: number): void {
   const jarPath = getJarPath();
   const dataDir = getDataDir();
 
+  // Ensure data directory exists before spawn
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  // Ensure JRE binary has execute permission (macOS strips +x from extraResources)
+  if (process.platform !== 'win32') {
+    try {
+      fs.chmodSync(jrePath, 0o755);
+      const jreDir = path.dirname(jrePath);
+      const entries = fs.readdirSync(jreDir);
+      for (const entry of entries) {
+        const fullPath = path.join(jreDir, entry);
+        try { fs.chmodSync(fullPath, 0o755); } catch { /* skip non-files */ }
+      }
+    } catch (err) {
+      console.error('[Backend] Failed to set JRE permissions:', err);
+    }
+  }
+
+  // Verify JRE and JAR exist
+  if (!fs.existsSync(jrePath)) {
+    console.error(`[Backend] JRE not found: ${jrePath}`);
+    throw new Error(`JRE not found at: ${jrePath}`);
+  }
+  if (!fs.existsSync(jarPath)) {
+    console.error(`[Backend] JAR not found: ${jarPath}`);
+    throw new Error(`Backend JAR not found at: ${jarPath}`);
+  }
+
   const dbUrl = `jdbc:h2:file:${dataDir}/waterstation;MODE=MySQL;DB_CLOSE_DELAY=-1`;
 
   const args = [
@@ -54,18 +83,42 @@ export function startBackend(port: number): void {
     console.error(`[Backend:ERR] ${data.toString().trim()}`);
   });
 
+  backendProcess.on('error', (err) => {
+    console.error(`[Backend] Failed to start process:`, err.message);
+    backendProcess = null;
+  });
+
   backendProcess.on('exit', (code) => {
     console.log(`[Backend] Process exited with code ${code}`);
     backendProcess = null;
   });
 }
 
-export function stopBackend(): void {
-  if (!backendProcess || !backendProcess.pid) return;
+export function stopBackend(): Promise<void> {
+  return new Promise((resolve) => {
+    if (!backendProcess || !backendProcess.pid) {
+      resolve();
+      return;
+    }
 
-  console.log('[Backend] Stopping...');
-  treekill(backendProcess.pid, 'SIGTERM');
-  backendProcess = null;
+    console.log('[Backend] Stopping...');
+    const pid = backendProcess.pid;
+
+    const timeout = setTimeout(() => {
+      console.log('[Backend] Force killing after timeout...');
+      treekill(pid, 'SIGKILL');
+      backendProcess = null;
+      resolve();
+    }, 5000);
+
+    backendProcess.on('exit', () => {
+      clearTimeout(timeout);
+      backendProcess = null;
+      resolve();
+    });
+
+    treekill(pid, 'SIGTERM');
+  });
 }
 
 export function waitForBackend(port: number, timeoutMs: number): Promise<void> {

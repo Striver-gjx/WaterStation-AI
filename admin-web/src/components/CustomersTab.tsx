@@ -17,7 +17,7 @@ import {
   UserCheck,
   ChevronRight
 } from 'lucide-react';
-import { Customer, CustomerTier, Order, TicketPackage } from '../types';
+import { Customer, CustomerTier, Order, TicketPackage, Product } from '../types';
 import { TRANSLATIONS } from '../translations';
 import CJKInput from './CJKInput';
 
@@ -26,7 +26,8 @@ interface CustomersTabProps {
   customers: Customer[];
   orders: Order[];
   ticketPackages: TicketPackage[];
-  onRegisterCustomer: (cust: Omit<Customer, 'id' | 'lastOrderDate' | 'lifetimeOrders'>) => void;
+  products: Product[];
+  onRegisterCustomer: (cust: Omit<Customer, 'id' | 'lastOrderDate' | 'lifetimeOrders'>, ticketProductId?: string) => void;
   onRecordPayment: (customerId: string, amount: number) => void;
   onDeleteCustomer: (customerId: string) => void;
 }
@@ -36,6 +37,7 @@ export default function CustomersTab({
   customers,
   orders,
   ticketPackages,
+  products,
   onRegisterCustomer,
   onRecordPayment,
   onDeleteCustomer
@@ -55,6 +57,7 @@ export default function CustomersTab({
   const [formTier, setFormTier] = useState<CustomerTier>(CustomerTier.Standard);
   const [formOutstanding, setFormOutstanding] = useState('');
   const [formTickets, setFormTickets] = useState('');
+  const [formTicketProductId, setFormTicketProductId] = useState('');
   const [formError, setFormError] = useState('');
 
   // Record Payment state in sidebar
@@ -85,14 +88,20 @@ export default function CustomersTab({
       return;
     }
 
+    const ticketCount = parseInt(formTickets) || 0;
+    if (ticketCount > 0 && !formTicketProductId) {
+      setFormError(language === 'en' ? 'Please select a product for the water tickets.' : '请选择水票对应的产品款型。');
+      return;
+    }
+
     onRegisterCustomer({
       name: formName,
       phone: formPhone,
       address: formAddress,
       tier: formTier,
       outstandingBalance: parseFloat(formOutstanding) || 0,
-      activeTickets: parseInt(formTickets) || 0
-    });
+      activeTickets: ticketCount
+    }, ticketCount > 0 ? formTicketProductId : undefined);
 
     setIsRegisterOpen(false);
     setFormName('');
@@ -101,6 +110,7 @@ export default function CustomersTab({
     setFormTier(CustomerTier.Standard);
     setFormOutstanding('');
     setFormTickets('');
+    setFormTicketProductId('');
   };
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
@@ -516,6 +526,25 @@ export default function CustomersTab({
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2 text-xs text-slate-700 outline-none"
                 />
               </div>
+
+              {/* Product selection for water tickets */}
+              {(parseInt(formTickets) || 0) > 0 && (
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-500 uppercase tracking-wider">{language === 'en' ? 'Ticket Product Type' : '水票对应产品 *'}</label>
+                  <select
+                    value={formTicketProductId}
+                    onChange={(e) => setFormTicketProductId(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
+                  >
+                    <option value="">{language === 'en' ? '-- Select Product --' : '-- 请选择产品 --'}</option>
+                    {products.filter(p => p.category !== 'Equipment').map(p => (
+                      <option key={p.id} value={p.id}>
+                        {language === 'en' ? p.name : p.nameZh}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t border-slate-100">

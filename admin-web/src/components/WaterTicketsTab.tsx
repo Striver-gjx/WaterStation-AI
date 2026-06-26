@@ -153,7 +153,7 @@ export default function WaterTicketsTab({
       customerId: sellCustomerId,
       customerName: cust.name,
       productId: sellProductId,
-      productName: prod.name,
+      productName: prod.nameZh || prod.name,
       totalTickets: sellTicketsQty,
       remainingTickets: sellTicketsQty,
       pricePaid: parseInt(sellPrice) || 0

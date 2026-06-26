@@ -25,7 +25,7 @@ echo ""
 # Step 2: Build frontend
 echo "[2/5] Building frontend..."
 cd "$PROJECT_ROOT/admin-web"
-VITE_API_BASE="http://localhost:18080" npm run build -- --mode production 2>/dev/null
+VITE_API_BASE="http://localhost:18080" npx vite build --base=./ --mode production 2>/dev/null
 mkdir -p "$DESKTOP_DIR/frontend"
 rm -rf "$DESKTOP_DIR/frontend"
 cp -r dist "$DESKTOP_DIR/frontend"
@@ -34,9 +34,10 @@ echo ""
 
 # Step 3: Build minimal JRE
 echo "[3/5] Building minimal JRE..."
-if [ -d "$DESKTOP_DIR/extraResources/jre" ]; then
+if [ -f "$DESKTOP_DIR/extraResources/jre/bin/java" ]; then
   echo "  -> JRE already exists, skipping (delete extraResources/jre to rebuild)"
 else
+  rm -rf "$DESKTOP_DIR/extraResources/jre"
   bash "$SCRIPT_DIR/package-jre.sh"
 fi
 echo "  -> JRE size: $(du -sh "$DESKTOP_DIR/extraResources/jre" | cut -f1)"

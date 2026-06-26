@@ -75,6 +75,26 @@ export default function App() {
     return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
   });
 
+  // System settings state (persisted in localStorage)
+  const [settings, setSettings] = useState<{
+    deliveryFee: string;
+    taxRate: string;
+    companyName: string;
+    companyAddress: string;
+    notifications: boolean;
+    latency: number;
+  }>(() => {
+    const cached = localStorage.getItem('aquaflow_settings');
+    return cached ? JSON.parse(cached) : {
+      deliveryFee: '15',
+      taxRate: '6',
+      companyName: '',
+      companyAddress: '',
+      notifications: true,
+      latency: 250,
+    };
+  });
+
   // Mobile sidebar states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -204,6 +224,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('aquaflow_products', JSON.stringify(products));
   }, [products]);
+
+  useEffect(() => {
+    localStorage.setItem('aquaflow_settings', JSON.stringify(settings));
+  }, [settings]);
 
   // Translate helpers
   const t = TRANSLATIONS[language];
@@ -392,7 +416,7 @@ export default function App() {
       status: OrderStatus.Paid,
       deliveryStatus: DeliveryStatus.Delivered,
       orderDate: todayStr,
-      paymentMethod: 'Water Ticket'
+      paymentMethod: '水票兑换'
     };
 
     setOrders(prev => [matchingOrder, ...prev]);
@@ -430,20 +454,20 @@ export default function App() {
       customerId: bundleData.customerId,
       customerName: bundleData.customerName,
       productId: bundleData.productId,
-      productName: `${bundleData.productName} (${bundleData.totalTickets} Pcs)`,
+      productName: `${bundleData.productName} (${bundleData.totalTickets}张水票)`,
       quantity: 1,
       totalAmount: bundleData.pricePaid,
       status: OrderStatus.Paid,
       deliveryStatus: DeliveryStatus.Delivered,
       orderDate: todayStr,
-      paymentMethod: 'Credit Card'
+      paymentMethod: '现金/转账'
     };
 
     setOrders(prev => [bundleOrder, ...prev]);
   };
 
   // CUSTOMER ACTIONS
-  const handleRegisterCustomer = (custData: Omit<Customer, 'id' | 'lastOrderDate' | 'lifetimeOrders'>) => {
+  const handleRegisterCustomer = (custData: Omit<Customer, 'id' | 'lastOrderDate' | 'lifetimeOrders'>, ticketProductId?: string) => {
     const nextId = `CUST-00${customers.length + 1}`;
     const newCust: Customer = {
       ...custData,
@@ -455,18 +479,19 @@ export default function App() {
     setCustomers(prev => [...prev, newCust]);
 
     // If preloaded with initial water tickets, set up a contract bundle automatically!
-    if (custData.activeTickets > 0) {
+    if (custData.activeTickets > 0 && ticketProductId) {
+      const prod = products.find(p => p.id === ticketProductId);
       const pkgId = `PKG-${3000 + ticketPackages.length + 1}`;
       const newPkg: TicketPackage = {
         id: pkgId,
         customerId: nextId,
         customerName: custData.name,
-        productId: 'PROD-001',
-        productName: 'Premium 20L Jug',
+        productId: ticketProductId,
+        productName: prod ? (prod.nameZh || prod.name) : '未知产品',
         totalTickets: custData.activeTickets,
         remainingTickets: custData.activeTickets,
         purchaseDate: '2026-06-25',
-        pricePaid: 0, // Gift package
+        pricePaid: 0,
         status: 'Active'
       };
       setTicketPackages(prev => [newPkg, ...prev]);
@@ -829,6 +854,7 @@ export default function App() {
               customers={customers}
               orders={orders}
               ticketPackages={ticketPackages}
+              products={products}
               onRegisterCustomer={handleRegisterCustomer}
               onRecordPayment={handleRecordPayment}
               onDeleteCustomer={handleDeleteCustomer}
@@ -850,6 +876,8 @@ export default function App() {
               language={language}
               onLanguageChange={setLanguage}
               onResetData={handleResetData}
+              settings={settings}
+              onSettingsChange={setSettings}
             />
           )}
 

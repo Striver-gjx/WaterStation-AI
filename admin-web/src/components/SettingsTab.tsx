@@ -21,22 +21,25 @@ interface SettingsTabProps {
   language: 'en' | 'zh';
   onLanguageChange: (lang: 'en' | 'zh') => void;
   onResetData: () => void;
+  settings: {
+    deliveryFee: string;
+    taxRate: string;
+    companyName: string;
+    companyAddress: string;
+    notifications: boolean;
+    latency: number;
+  };
+  onSettingsChange: (settings: SettingsTabProps['settings']) => void;
 }
 
 export default function SettingsTab({
   language,
   onLanguageChange,
-  onResetData
+  onResetData,
+  settings,
+  onSettingsChange
 }: SettingsTabProps) {
   const t = TRANSLATIONS[language];
-
-  // Local settings states
-  const [latency, setLatency] = useState(250);
-  const [notifications, setNotifications] = useState(true);
-  const [deliveryFee, setDeliveryFee] = useState('15');
-  const [taxRate, setTaxRate] = useState('6');
-  const [companyName, setCompanyName] = useState(t.companyName);
-  const [companyAddress, setCompanyAddress] = useState(t.companyAddress);
 
   // Status flags
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -45,6 +48,10 @@ export default function SettingsTab({
     e.preventDefault();
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
+  };
+
+  const updateSetting = <K extends keyof typeof settings>(key: K, value: typeof settings[K]) => {
+    onSettingsChange({ ...settings, [key]: value });
   };
 
   return (
@@ -123,8 +130,8 @@ export default function SettingsTab({
                     <input
                       type="number"
                       step="0.01"
-                      value={deliveryFee}
-                      onChange={(e) => setDeliveryFee(e.target.value)}
+                      value={settings.deliveryFee}
+                      onChange={(e) => updateSetting('deliveryFee', e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none"
                     />
                   </div>
@@ -138,8 +145,8 @@ export default function SettingsTab({
                     <input
                       type="number"
                       step="0.1"
-                      value={taxRate}
-                      onChange={(e) => setTaxRate(e.target.value)}
+                      value={settings.taxRate}
+                      onChange={(e) => updateSetting('taxRate', e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none"
                     />
                   </div>
@@ -159,8 +166,8 @@ export default function SettingsTab({
                   <label className="font-semibold text-slate-500 uppercase tracking-wider block">{language === 'en' ? 'Company Name' : '公司法定全称'}</label>
                   <CJKInput
                     type="text"
-                    value={companyName}
-                    onValueChange={setCompanyName}
+                    value={settings.companyName}
+                    onValueChange={(v) => updateSetting('companyName', v)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-700 outline-none"
                   />
                 </div>
@@ -171,8 +178,8 @@ export default function SettingsTab({
                     <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <CJKInput
                       type="text"
-                      value={companyAddress}
-                      onValueChange={setCompanyAddress}
+                      value={settings.companyAddress}
+                      onValueChange={(v) => updateSetting('companyAddress', v)}
                       className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl pl-9 pr-3 py-2.5 text-xs font-semibold text-slate-700 outline-none"
                     />
                   </div>
@@ -194,10 +201,10 @@ export default function SettingsTab({
                 </div>
                 <button
                   type="button"
-                  onClick={() => setNotifications(!notifications)}
-                  className={`w-11 h-6 rounded-full transition relative outline-none ${notifications ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  onClick={() => updateSetting('notifications', !settings.notifications)}
+                  className={`w-11 h-6 rounded-full transition relative outline-none ${settings.notifications ? 'bg-blue-600' : 'bg-slate-300'}`}
                 >
-                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all duration-200 ${notifications ? 'right-1' : 'left-1'}`} />
+                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all duration-200 ${settings.notifications ? 'right-1' : 'left-1'}`} />
                 </button>
               </div>
             </div>
@@ -226,15 +233,15 @@ export default function SettingsTab({
                   <Cpu className="w-4 h-4 text-slate-400" />
                   {t.simulatedLatency}
                 </span>
-                <span className="font-mono font-bold text-blue-600">{latency}ms</span>
+                <span className="font-mono font-bold text-blue-600">{settings.latency}ms</span>
               </div>
               <input 
                 type="range" 
                 min="0" 
                 max="1000" 
                 step="50"
-                value={latency} 
-                onChange={(e) => setLatency(parseInt(e.target.value))}
+                value={settings.latency} 
+                onChange={(e) => updateSetting('latency', parseInt(e.target.value))}
                 className="w-full h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
               />
               <span className="text-[10px] text-slate-400 block leading-relaxed">{language === 'en' ? 'Simulates realistic backend pipeline response times when creating or editing items.' : '通过此滑动条可调节模拟真实网络中水厂调度微服务的 API 请求接口延迟。'}</span>

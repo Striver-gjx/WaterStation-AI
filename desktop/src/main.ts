@@ -128,9 +128,11 @@ async function bootstrap(): Promise<void> {
       splashWindow.close();
       splashWindow = null;
     }
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const resourcesPath = process.resourcesPath || 'unknown';
     dialog.showErrorBox(
       '启动失败',
-      `后端服务启动超时，请重试。\n\n错误信息: ${err instanceof Error ? err.message : String(err)}`
+      `后端服务启动失败。\n\n错误信息: ${errMsg}\n\nResources路径: ${resourcesPath}\n\n请检查:\n1. JRE 是否完整包含在安装包中\n2. 后端 JAR 文件是否存在\n3. 系统是否允许应用执行`
     );
     app.quit();
   }
@@ -138,13 +140,23 @@ async function bootstrap(): Promise<void> {
 
 app.whenReady().then(bootstrap);
 
-app.on('window-all-closed', () => {
-  stopBackend();
-  app.quit();
+let isQuitting = false;
+
+app.on('window-all-closed', async () => {
+  if (!isQuitting) {
+    isQuitting = true;
+    await stopBackend();
+    app.quit();
+  }
 });
 
-app.on('before-quit', () => {
-  stopBackend();
+app.on('before-quit', async (e) => {
+  if (!isQuitting) {
+    isQuitting = true;
+    e.preventDefault();
+    await stopBackend();
+    app.quit();
+  }
 });
 
 app.on('activate', () => {

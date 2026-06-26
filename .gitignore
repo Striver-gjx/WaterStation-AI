@@ -36,6 +36,15 @@ logs/
 # Data (local storage)
 data/
 
+# Desktop build artifacts
+desktop/release/
+desktop/extraResources/jre/
+desktop/extraResources/jre-win-x64/
+desktop/extraResources/backend/
+desktop/dist-electron/
+desktop/frontend/
+desktop/.python-shim/
+
 # Test coverage
 coverage/
 .nyc_output/

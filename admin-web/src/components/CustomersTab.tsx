@@ -496,8 +496,8 @@ export default function CustomersTab({
                     onChange={(e) => setFormTier(e.target.value as CustomerTier)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                   >
-                    <option value={CustomerTier.Standard}>Standard</option>
-                    <option value={CustomerTier.Gold}>Gold</option>
+                    <option value={CustomerTier.Standard}>普通</option>
+                    <option value={CustomerTier.Gold}>黄金</option>
                     <option value={CustomerTier.VIP}>VIP</option>
                   </select>
                 </div>
@@ -537,7 +537,7 @@ export default function CustomersTab({
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                   >
                     <option value="">{language === 'en' ? '-- Select Product --' : '-- 请选择产品 --'}</option>
-                    {products.filter(p => p.category !== 'Equipment').map(p => (
+                    {products.filter(p => p.category !== '设备').map(p => (
                       <option key={p.id} value={p.id}>
                         {language === 'en' ? p.name : p.nameZh}
                       </option>

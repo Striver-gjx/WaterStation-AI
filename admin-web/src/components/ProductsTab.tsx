@@ -43,7 +43,7 @@ export default function ProductsTab({
   // Form states for creating a product
   const [formName, setFormName] = useState('');
   const [formNameZh, setFormNameZh] = useState('');
-  const [formCategory, setFormCategory] = useState<Product['category']>('Barrels');
+  const [formCategory, setFormCategory] = useState<Product['category']>('桶装水');
   const [formVolume, setFormVolume] = useState('20L');
   const [formPrice, setFormPrice] = useState('28');
   const [formStock, setFormStock] = useState('100');
@@ -118,7 +118,7 @@ export default function ProductsTab({
     setIsAddOpen(false);
     setFormName('');
     setFormNameZh('');
-    setFormCategory('Barrels');
+    setFormCategory('桶装水');
     setFormVolume('20L');
     setFormPrice('28');
     setFormStock('100');
@@ -173,7 +173,7 @@ export default function ProductsTab({
 
           {/* Category filter tabs */}
           <div className="flex flex-wrap items-center gap-1.5">
-            {(['All', 'Barrels', 'Cases', 'Equipment', 'Bundles'] as const).map((cat) => (
+            {(['All', '桶装水', '箱装水', '设备', '套餐'] as const).map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}
@@ -183,11 +183,7 @@ export default function ProductsTab({
                     : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
                 }`}
               >
-                {cat === 'All' ? t.all : 
-                 cat === 'Barrels' ? (language === 'en' ? 'Barrels / Jugs' : '大桶水') :
-                 cat === 'Cases' ? (language === 'en' ? 'Cases' : '箱装水') :
-                 cat === 'Equipment' ? (language === 'en' ? 'Equipment' : '设备组件') :
-                 (language === 'en' ? 'Package Bundles' : '组合套餐')}
+                {cat === 'All' ? t.all : cat}
               </button>
             ))}
           </div>
@@ -226,12 +222,12 @@ export default function ProductsTab({
 
                   {/* Stock Status Tag */}
                   <span className={`absolute top-3 right-3 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-lg ${
-                    p.status === 'In Stock' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
-                    p.status === 'Low Stock' ? 'bg-amber-50 text-amber-700 border border-amber-100 animate-pulse' :
+                    p.status === '有货' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                    p.status === '库存不足' ? 'bg-amber-50 text-amber-700 border border-amber-100 animate-pulse' :
                     'bg-rose-50 text-rose-700 border border-rose-100'
                   }`}>
-                    {p.status === 'In Stock' ? t.inStock : 
-                     p.status === 'Low Stock' ? t.lowStock : 
+                    {p.status === '有货' ? t.inStock : 
+                     p.status === '库存不足' ? t.lowStock : 
                      t.outOfStock}
                   </span>
                 </div>
@@ -451,10 +447,10 @@ export default function ProductsTab({
                     onChange={(e) => setFormCategory(e.target.value as any)}
                     className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                   >
-                    <option value="Barrels">Barrels (桶装水)</option>
-                    <option value="Cases">Cases (箱装水)</option>
-                    <option value="Equipment">Equipment (设备/备件)</option>
-                    <option value="Bundles">Bundles (水票套餐)</option>
+                    <option value="桶装水">桶装水</option>
+                    <option value="箱装水">箱装水</option>
+                    <option value="设备">设备/备件</option>
+                    <option value="套餐">水票套餐</option>
                   </select>
                 </div>
                 <div className="space-y-1">

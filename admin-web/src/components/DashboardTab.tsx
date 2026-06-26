@@ -64,22 +64,38 @@ export default function DashboardTab({
     .filter(log => log.redemptionDate.startsWith('2026-06-25') || log.redemptionDate.startsWith('2026-06-24'))
     .reduce((sum, log) => sum + log.redeemedQty, 0);
 
-  const lowStockCount = products.filter(p => p.status === 'Low Stock' || p.status === 'Out of Stock').length;
+  const lowStockCount = products.filter(p => p.status === '库存不足' || p.status === '缺货').length;
 
   // 2. Prepare Chart Data
-  // Weekly Sales Trend Data
-  const salesTrendData = [
-    { day: language === 'en' ? 'Mon' : '周一', sales: 420, redemptions: 12 },
-    { day: language === 'en' ? 'Tue' : '周二', sales: 580, redemptions: 15 },
-    { day: language === 'en' ? 'Wed' : '周三', sales: 510, redemptions: 14 },
-    { day: language === 'en' ? 'Thu' : '周四', sales: 720, redemptions: 18 },
-    { day: language === 'en' ? 'Fri' : '周五', sales: 900, redemptions: 22 },
-    { day: language === 'en' ? 'Sat' : '周六', sales: 380, redemptions: 8 },
-    { day: language === 'en' ? 'Sun' : '周日', sales: todayStr ? orders.filter(o => o.status === OrderStatus.Paid).reduce((sum, o) => sum + o.totalAmount, 0) : 480, redemptions: totalTicketsRedeemed || 10 },
-  ];
+  // Dynamic weekly sales trend based on real orders (last 7 days)
+  const salesTrendData = (() => {
+    const today = new Date();
+    const days: { day: string; sales: number; redemptions: number }[] = [];
+    const dayNames = language === 'en'
+      ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      : ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      const dayName = dayNames[d.getDay()];
+
+      const daySales = orders
+        .filter(o => o.orderDate === dateStr && o.status === OrderStatus.Paid)
+        .reduce((sum, o) => sum + o.totalAmount, 0);
+
+      const dayRedemptions = redemptionLogs
+        .filter(log => log.redemptionDate.startsWith(dateStr))
+        .reduce((sum, log) => sum + log.redeemedQty, 0);
+
+      days.push({ day: dayName, sales: daySales, redemptions: dayRedemptions });
+    }
+    return days;
+  })();
 
   // Redemption vs Direct Sales ratio
-  const directSalesCount = orders.filter(o => o.paymentMethod !== 'Water Ticket').length;
+  const directSalesCount = orders.filter(o => o.paymentMethod !== '水票兑换' && o.paymentMethod !== '水票扣减').length;
   const ticketRedemptionCount = redemptionLogs.length;
 
   const distributionData = [

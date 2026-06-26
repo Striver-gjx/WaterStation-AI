@@ -4,8 +4,8 @@
 
 export enum CustomerTier {
   VIP = 'VIP',
-  Gold = 'Gold',
-  Standard = 'Standard'
+  Gold = '黄金',
+  Standard = '普通'
 }
 
 export interface Customer {
@@ -21,15 +21,15 @@ export interface Customer {
 }
 
 export enum OrderStatus {
-  Paid = 'Paid',
-  Pending = 'Pending',
-  Cancelled = 'Cancelled'
+  Paid = '已支付',
+  Pending = '待结算',
+  Cancelled = '已取消'
 }
 
 export enum DeliveryStatus {
-  Pending = 'Pending',
-  InTransit = 'In Transit',
-  Delivered = 'Delivered'
+  Pending = '待派送',
+  InTransit = '配送中',
+  Delivered = '已送达'
 }
 
 export interface Order {
@@ -56,7 +56,7 @@ export interface TicketPackage {
   remainingTickets: number;
   purchaseDate: string;
   pricePaid: number;
-  status: 'Active' | 'Depleted';
+  status: '使用中' | '已用完';
 }
 
 export interface RedemptionLog {
@@ -76,12 +76,12 @@ export interface Product {
   id: string;
   name: string;
   nameZh: string;
-  category: 'Barrels' | 'Cases' | 'Equipment' | 'Bundles';
+  category: '桶装水' | '箱装水' | '设备' | '套餐';
   volume: string;
   price: number;
   stock: number;
   maxStock: number;
-  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  status: '有货' | '库存不足' | '缺货';
   imageUrl: string;
 }
 

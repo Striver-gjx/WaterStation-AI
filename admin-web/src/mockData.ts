@@ -63,60 +63,60 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 'PROD-001',
     name: 'Premium 20L Jug',
     nameZh: '20L 优质大桶水',
-    category: 'Barrels',
+    category: '桶装水',
     volume: '20L',
     price: 28.00,
     stock: 120,
     maxStock: 300,
-    status: 'In Stock',
+    status: '有货',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxPaktBDwEprciMfw6kb61uhJ4C8ZQR8c8LDcPzjUyxo5Tj7ozw1Y8tbSB6vTQbomm3tsy7W32kxb9vQEqISloU33Rc0BHHYuRM0im0akYfzx_3XnaJ4pz3dmaIby_eNCYIb8lpibkepZ4fNLW03aBTefAjLGkUJI8SuAtEjFi6K-RriUVq6dDNpodjawQ6tZlw0XHqDA_3k3EgwQnZY_q0HX5tH-njkWcjOMCtamrbvs9-cKyjUO9At1nTi96J4QIKFyhFS2TooUs'
   },
   {
     id: 'PROD-002',
     name: 'Purified 500ml Case',
     nameZh: '500ml 纯净水箱装 (24瓶)',
-    category: 'Cases',
+    category: '箱装水',
     volume: '500ml x 24',
     price: 35.00,
     stock: 24,
     maxStock: 250,
-    status: 'Low Stock',
+    status: '库存不足',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDjG0qOr6L_5iSJ2H_6ik_4Oz7-_ZbM4pWJuKfdfJOlK-53eZF31YWHKhMTDVOzpVeutGyZ8Y5GFYRpI1e63foq_b2IyH1zf63NkmikLwZHX0dYo-bPE2p5LHNL3j_ktb19ZBevuJ6rSqgEYmuPNm0QARUFXghycuz6PzhoMML5WqI7fiPnfDwJX4dGrI5vxgOyNL4qgXx4ULVSW6Rpl0xWDOtUHkD5s2qrOA7CT0I1qAlmVhtvgCA7gQLse6LOfpRtNbyXXUZ5EQyH'
   },
   {
     id: 'PROD-003',
     name: 'Standard Filter Kit',
     nameZh: '标准净水过滤器套件',
-    category: 'Equipment',
+    category: '设备',
     volume: 'N/A',
     price: 180.00,
     stock: 8,
     maxStock: 50,
-    status: 'Low Stock',
+    status: '库存不足',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-UsWftWffRK655MeRlKSj7BU5dSy21UDju_AbNCbFuRnXhYPIyzOlYdfTutyEyYZpQjTP7NoUxHj9lfF7O0MdS0OnB8MfxG500UlRSZIeVMIGP6kQqEP6vTs_TTj2x57CFXjSTYtLVc7oh03QRROjbHxlOI_wT1989cHppRQ4mCB99AK2qFwZsc8wBoG-eLbuVIWQrFVJ1_YXvsj4KzFifX4y3tgBiotJ2NFJoWB0wD08Ps_JNhp-x2cmJWTO7SRNYFqDjly1JjrT'
   },
   {
     id: 'PROD-004',
     name: 'Enterprise 20L Barrel x50 Bundle',
     nameZh: '企业级 20L 大桶水 x50 套餐',
-    category: 'Bundles',
+    category: '套餐',
     volume: '20L x 50',
     price: 1100.00,
     stock: 99,
     maxStock: 100,
-    status: 'In Stock',
+    status: '有货',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxPaktBDwEprciMfw6kb61uhJ4C8ZQR8c8LDcPzjUyxo5Tj7ozw1Y8tbSB6vTQbomm3tsy7W32kxb9vQEqISloU33Rc0BHHYuRM0im0akYfzx_3XnaJ4pz3dmaIby_eNCYIb8lpibkepZ4fNLW03aBTefAjLGkUJI8SuAtEjFi6K-RriUVq6dDNpodjawQ6tZlw0XHqDA_3k3EgwQnZY_q0HX5tH-njkWcjOMCtamrbvs9-cKyjUO9At1nTi96J4QIKFyhFS2TooUs'
   },
   {
     id: 'PROD-005',
     name: 'Home 20L Barrel x10 Bundle',
     nameZh: '家庭装 20L 大桶水 x10 套餐',
-    category: 'Bundles',
+    category: '套餐',
     volume: '20L x 10',
     price: 240.00,
     stock: 95,
     maxStock: 100,
-    status: 'In Stock',
+    status: '有货',
     imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDxPaktBDwEprciMfw6kb61uhJ4C8ZQR8c8LDcPzjUyxo5Tj7ozw1Y8tbSB6vTQbomm3tsy7W32kxb9vQEqISloU33Rc0BHHYuRM0im0akYfzx_3XnaJ4pz3dmaIby_eNCYIb8lpibkepZ4fNLW03aBTefAjLGkUJI8SuAtEjFi6K-RriUVq6dDNpodjawQ6tZlw0XHqDA_3k3EgwQnZY_q0HX5tH-njkWcjOMCtamrbvs9-cKyjUO9At1nTi96J4QIKFyhFS2TooUs'
   }
 ];
@@ -200,7 +200,7 @@ export const INITIAL_TICKET_PACKAGES: TicketPackage[] = [
     remainingTickets: 12,
     purchaseDate: '2026-06-10',
     pricePaid: 450.00,
-    status: 'Active'
+    status: '使用中'
   },
   {
     id: 'PKG-3002',
@@ -212,7 +212,7 @@ export const INITIAL_TICKET_PACKAGES: TicketPackage[] = [
     remainingTickets: 5,
     purchaseDate: '2026-06-12',
     pricePaid: 240.00,
-    status: 'Active'
+    status: '使用中'
   },
   {
     id: 'PKG-3003',
@@ -224,7 +224,7 @@ export const INITIAL_TICKET_PACKAGES: TicketPackage[] = [
     remainingTickets: 24,
     purchaseDate: '2026-06-18',
     pricePaid: 650.00,
-    status: 'Active'
+    status: '使用中'
   },
   {
     id: 'PKG-3004',
@@ -236,7 +236,7 @@ export const INITIAL_TICKET_PACKAGES: TicketPackage[] = [
     remainingTickets: 8,
     purchaseDate: '2026-06-15',
     pricePaid: 480.00,
-    status: 'Active'
+    status: '使用中'
   }
 ];
 
@@ -250,8 +250,8 @@ export const INITIAL_REDEMPTION_LOGS: RedemptionLog[] = [
     redeemedQty: 3,
     remainingAfter: 12,
     redemptionDate: '2026-06-24 14:32',
-    driverName: 'Robert Vance',
-    notes: 'Left at reception'
+    driverName: '王大勇',
+    notes: '放在前台'
   },
   {
     id: 'RED-9002',
@@ -262,8 +262,8 @@ export const INITIAL_REDEMPTION_LOGS: RedemptionLog[] = [
     redeemedQty: 2,
     remainingAfter: 24,
     redemptionDate: '2026-06-25 09:15',
-    driverName: 'Jason Statham',
-    notes: 'Delivered to kitchen on 3rd floor'
+    driverName: '李强',
+    notes: '送到3楼厨房'
   },
   {
     id: 'RED-9003',
@@ -274,7 +274,7 @@ export const INITIAL_REDEMPTION_LOGS: RedemptionLog[] = [
     redeemedQty: 1,
     remainingAfter: 5,
     redemptionDate: '2026-06-22 11:45',
-    driverName: 'Robert Vance',
-    notes: 'Quick exchange'
+    driverName: '王大勇',
+    notes: '快速交换'
   }
 ];

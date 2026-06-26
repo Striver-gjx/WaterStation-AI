@@ -53,7 +53,7 @@ export default function OrdersTab({
   const [formCustomerId, setFormCustomerId] = useState('');
   const [formProductId, setFormProductId] = useState('');
   const [formQty, setFormQty] = useState('1');
-  const [formPaymentMethod, setFormPaymentMethod] = useState('WeChat Pay');
+  const [formPaymentMethod, setFormPaymentMethod] = useState('微信支付');
   const [formStatus, setFormStatus] = useState<OrderStatus>(OrderStatus.Paid);
   const [formDelivery, setFormDelivery] = useState<DeliveryStatus>(DeliveryStatus.Pending);
   const [formError, setFormError] = useState('');
@@ -96,7 +96,7 @@ export default function OrdersTab({
       customerId: formCustomerId,
       customerName: cust.name,
       productId: formProductId,
-      productName: prod.name,
+      productName: prod.nameZh || prod.name,
       quantity: parseInt(formQty) || 1,
       totalAmount: calculatedTotal,
       status: formStatus,
@@ -464,11 +464,11 @@ export default function OrdersTab({
                   onChange={(e) => setFormPaymentMethod(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                 >
-                  <option value="Water Ticket">{language === 'en' ? 'Water Ticket' : '水票扣减'}</option>
-                  <option value="WeChat Pay">{language === 'en' ? 'WeChat Pay' : '微信支付'}</option>
-                  <option value="Alipay">{language === 'en' ? 'Alipay' : '支付宝'}</option>
-                  <option value="Credit Card">{language === 'en' ? 'Credit Card' : '信用卡'}</option>
-                  <option value="Cash">{language === 'en' ? 'Cash' : '现金支付'}</option>
+                  <option value="水票兑换">{language === 'en' ? 'Water Ticket' : '水票兑换'}</option>
+                  <option value="微信支付">{language === 'en' ? 'WeChat Pay' : '微信支付'}</option>
+                  <option value="支付宝">{language === 'en' ? 'Alipay' : '支付宝'}</option>
+                  <option value="信用卡">{language === 'en' ? 'Credit Card' : '信用卡'}</option>
+                  <option value="现金支付">{language === 'en' ? 'Cash' : '现金支付'}</option>
                 </select>
               </div>
 

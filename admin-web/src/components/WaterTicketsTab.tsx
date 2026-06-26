@@ -49,7 +49,7 @@ export default function WaterTicketsTab({
   const [redCustomerId, setRedCustomerId] = useState('');
   const [redPackageId, setRedPackageId] = useState('');
   const [redQty, setRedQty] = useState('1');
-  const [redDriver, setRedDriver] = useState('Robert Vance');
+  const [redDriver, setRedDriver] = useState('王大勇');
   const [redNotes, setRedNotes] = useState('');
   const [redSuccess, setRedSuccess] = useState('');
   const [redError, setRedError] = useState('');
@@ -295,10 +295,10 @@ export default function WaterTicketsTab({
                   onChange={(e) => setRedDriver(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                 >
-                  <option value="Robert Vance">Robert Vance</option>
-                  <option value="Jason Statham">Jason Statham</option>
-                  <option value="Arthur Dent">Arthur Dent</option>
-                  <option value="Vance Refrigeration">Vance Delivery</option>
+                  <option value="王大勇">王大勇</option>
+                  <option value="李强">李强</option>
+                  <option value="张伟">张伟</option>
+                  <option value="陈建国">陈建国</option>
                 </select>
               </div>
             </div>
@@ -502,7 +502,7 @@ export default function WaterTicketsTab({
                   onChange={(e) => handleProductChangeForSell(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-xl px-3 py-2.5 text-xs text-slate-700 outline-none"
                 >
-                  {products.filter(p => p.category !== 'Equipment').map(p => (
+                  {products.filter(p => p.category !== '设备').map(p => (
                     <option key={p.id} value={p.id}>
                       {language === 'en' ? p.name : p.nameZh}
                     </option>

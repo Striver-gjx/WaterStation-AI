@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Settings, 
   Globe, 
@@ -12,7 +12,11 @@ import {
   Truck, 
   CheckCircle,
   Bell,
-  Check
+  Check,
+  Download,
+  Upload,
+  FolderOpen,
+  HardDrive
 } from 'lucide-react';
 import { TRANSLATIONS } from '../translations';
 import CJKInput from './CJKInput';
@@ -21,6 +25,8 @@ interface SettingsTabProps {
   language: 'en' | 'zh';
   onLanguageChange: (lang: 'en' | 'zh') => void;
   onResetData: () => void;
+  onExportData: () => void;
+  onImportData: (file: File) => void;
   settings: {
     deliveryFee: string;
     taxRate: string;
@@ -36,13 +42,15 @@ export default function SettingsTab({
   language,
   onLanguageChange,
   onResetData,
+  onExportData,
+  onImportData,
   settings,
   onSettingsChange
 }: SettingsTabProps) {
   const t = TRANSLATIONS[language];
 
-  // Status flags
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -245,6 +253,67 @@ export default function SettingsTab({
                 className="w-full h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
               />
               <span className="text-[10px] text-slate-400 block leading-relaxed">{language === 'en' ? 'Simulates realistic backend pipeline response times when creating or editing items.' : '通过此滑动条可调节模拟真实网络中水厂调度微服务的 API 请求接口延迟。'}</span>
+            </div>
+
+            {/* Data Import / Export */}
+            <div className="space-y-3 bg-blue-50/30 p-3.5 rounded-2xl border border-blue-100/50">
+              <div className="flex items-center gap-1.5 text-blue-800">
+                <HardDrive className="w-4.5 h-4.5" />
+                <h4 className="font-bold">{language === 'en' ? 'Data Backup & Restore' : '数据备份与恢复'}</h4>
+              </div>
+              <p className="text-slate-500 text-[11px] leading-relaxed">
+                {language === 'en'
+                  ? 'Export all business data (customers, orders, tickets, products, settings) to a portable JSON file. Import on any device (macOS/Windows) to restore.'
+                  : '将所有业务数据（客户、订单、水票、产品、设置）导出为可移植 JSON 文件。支持跨平台（macOS/Windows）导入恢复。'
+                }
+              </p>
+
+              <button
+                onClick={onExportData}
+                className="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-xl transition text-center border border-blue-200 flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                {language === 'en' ? 'Export Data' : '导出数据'}
+              </button>
+
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl transition text-center border border-emerald-200 flex items-center justify-center gap-2"
+              >
+                <Upload className="w-4 h-4" />
+                {language === 'en' ? 'Import Data' : '导入数据'}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (confirm(language === 'en'
+                      ? 'Importing will replace ALL current data. Continue?'
+                      : '导入将覆盖当前所有数据，是否继续？'
+                    )) {
+                      onImportData(file);
+                    }
+                    e.target.value = '';
+                  }
+                }}
+              />
+
+              {(window as unknown as Record<string, unknown>).electronAPI && (
+                <button
+                  onClick={() => {
+                    const api = (window as unknown as Record<string, unknown>).electronAPI as { openDataDirectory: () => void };
+                    api.openDataDirectory();
+                  }}
+                  className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold rounded-xl transition text-center border border-slate-200 flex items-center justify-center gap-2"
+                >
+                  <FolderOpen className="w-4 h-4" />
+                  {language === 'en' ? 'Open Data Directory' : '打开数据目录'}
+                </button>
+              )}
             </div>
 
             {/* Master hard reset database */}

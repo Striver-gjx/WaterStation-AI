@@ -246,6 +246,57 @@ export default function App() {
     setActiveTab('dashboard');
   };
 
+  const handleExportData = () => {
+    const exportPayload = {
+      version: '1.0',
+      exportTime: new Date().toISOString(),
+      platform: navigator.platform,
+      customers,
+      orders,
+      products,
+      ticketPackages,
+      redemptionLogs,
+      settings,
+      language,
+    };
+    const jsonStr = JSON.stringify(exportPayload, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.download = `waterstation_backup_${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (!data.version) {
+          alert(language === 'zh' ? '无效的数据文件：缺少版本号' : 'Invalid data file: missing version');
+          return;
+        }
+        if (data.customers) setCustomers(data.customers);
+        if (data.orders) setOrders(data.orders);
+        if (data.products) setProducts(data.products);
+        if (data.ticketPackages) setTicketPackages(data.ticketPackages);
+        if (data.redemptionLogs) setRedemptionLogs(data.redemptionLogs);
+        if (data.settings) setSettings(data.settings);
+        if (data.language) setLanguage(data.language);
+        setActiveTab('dashboard');
+        alert(language === 'zh' ? '数据导入成功！' : 'Data imported successfully!');
+      } catch (err) {
+        alert(language === 'zh' ? '文件解析失败，请确认为有效的 JSON 备份文件' : 'File parse error. Please confirm it is a valid JSON backup.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   // ORDER ACTIONS
   const handleCreateOrder = (newOrderData: Omit<Order, 'id' | 'orderDate'>) => {
     const nextId = `ORD-${1000 + orders.length + 1}`;
@@ -278,8 +329,8 @@ export default function App() {
     setProducts(prevProducts => prevProducts.map(p => {
       if (p.id === newOrderData.productId) {
         const remainingStock = Math.max(0, p.stock - newOrderData.quantity);
-        const status = remainingStock <= 0 ? 'Out of Stock' :
-                       remainingStock <= p.maxStock * 0.2 ? 'Low Stock' : 'In Stock';
+        const status = remainingStock <= 0 ? '缺货' :
+                       remainingStock <= p.maxStock * 0.2 ? '库存不足' : '有货';
         return {
           ...p,
           stock: remainingStock,
@@ -367,7 +418,7 @@ export default function App() {
         return {
           ...pkg,
           remainingTickets: remaining,
-          status: remaining <= 0 ? 'Depleted' : 'Active'
+          status: remaining <= 0 ? '已用完' : '使用中'
         };
       }
       return pkg;
@@ -392,8 +443,8 @@ export default function App() {
       setProducts(prevProducts => prevProducts.map(p => {
         if (p.id === pkg.productId) {
           const remainingStock = Math.max(0, p.stock - redemptionData.redeemedQty);
-          const status = remainingStock <= 0 ? 'Out of Stock' :
-                         remainingStock <= p.maxStock * 0.2 ? 'Low Stock' : 'In Stock';
+          const status = remainingStock <= 0 ? '缺货' :
+                         remainingStock <= p.maxStock * 0.2 ? '库存不足' : '有货';
           return {
             ...p,
             stock: remainingStock,
@@ -430,7 +481,7 @@ export default function App() {
       ...bundleData,
       id: nextPkgId,
       purchaseDate: todayStr,
-      status: 'Active'
+      status: '使用中'
     };
 
     setTicketPackages(prev => [newPkg, ...prev]);
@@ -460,7 +511,7 @@ export default function App() {
       status: OrderStatus.Paid,
       deliveryStatus: DeliveryStatus.Delivered,
       orderDate: todayStr,
-      paymentMethod: '现金/转账'
+      paymentMethod: '现金支付'
     };
 
     setOrders(prev => [bundleOrder, ...prev]);
@@ -492,7 +543,7 @@ export default function App() {
         remainingTickets: custData.activeTickets,
         purchaseDate: '2026-06-25',
         pricePaid: 0,
-        status: 'Active'
+        status: '使用中'
       };
       setTicketPackages(prev => [newPkg, ...prev]);
     }
@@ -519,8 +570,8 @@ export default function App() {
   // PRODUCT ACTIONS
   const handleAddProduct = (prodData: Omit<Product, 'id' | 'status'>) => {
     const nextId = `PROD-${100 + products.length + 1}`;
-    const status = prodData.stock <= 0 ? 'Out of Stock' :
-                   prodData.stock <= prodData.maxStock * 0.2 ? 'Low Stock' : 'In Stock';
+    const status = prodData.stock <= 0 ? '缺货' :
+                   prodData.stock <= prodData.maxStock * 0.2 ? '库存不足' : '有货';
 
     const newProd: Product = {
       ...prodData,
@@ -535,8 +586,8 @@ export default function App() {
     setProducts(prev => prev.map(p => {
       if (p.id === productId) {
         const merged = { ...p, ...updates };
-        const status = merged.stock <= 0 ? 'Out of Stock' :
-                       merged.stock <= merged.maxStock * 0.2 ? 'Low Stock' : 'In Stock';
+        const status = merged.stock <= 0 ? '缺货' :
+                       merged.stock <= merged.maxStock * 0.2 ? '库存不足' : '有货';
         return {
           ...merged,
           status
@@ -876,6 +927,8 @@ export default function App() {
               language={language}
               onLanguageChange={setLanguage}
               onResetData={handleResetData}
+              onExportData={handleExportData}
+              onImportData={handleImportData}
               settings={settings}
               onSettingsChange={setSettings}
             />

@@ -1,5 +1,6 @@
-import { app, BrowserWindow, dialog } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import path from 'path';
+import fs from 'fs';
 import { startBackend, stopBackend, waitForBackend } from './java-backend';
 
 let mainWindow: BrowserWindow | null = null;
@@ -139,6 +140,53 @@ async function bootstrap(): Promise<void> {
 }
 
 app.whenReady().then(bootstrap);
+
+// IPC: Data export — save JSON to user-chosen location
+ipcMain.handle('data:export', async (_event, jsonStr: string, defaultName: string) => {
+  const result = await dialog.showSaveDialog({
+    title: '导出数据',
+    defaultPath: path.join(app.getPath('documents'), defaultName),
+    filters: [{ name: 'JSON Files', extensions: ['json'] }],
+  });
+  if (!result.canceled && result.filePath) {
+    fs.writeFileSync(result.filePath, jsonStr, 'utf-8');
+    return { success: true, path: result.filePath };
+  }
+  return { success: false };
+});
+
+// IPC: Data import — open file dialog and read JSON
+ipcMain.handle('data:import', async () => {
+  const result = await dialog.showOpenDialog({
+    title: '导入数据',
+    filters: [{ name: 'JSON Files', extensions: ['json'] }],
+    properties: ['openFile'],
+  });
+  if (!result.canceled && result.filePaths.length > 0) {
+    const content = fs.readFileSync(result.filePaths[0], 'utf-8');
+    return { success: true, content, path: result.filePaths[0] };
+  }
+  return { success: false };
+});
+
+// IPC: Get data directory path
+ipcMain.handle('data:directory', () => {
+  const dataDir = path.join(app.getPath('userData'), 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  return dataDir;
+});
+
+// IPC: Open data directory in file explorer
+ipcMain.handle('data:open-directory', () => {
+  const dataDir = path.join(app.getPath('userData'), 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  shell.openPath(dataDir);
+  return dataDir;
+});
 
 let isQuitting = false;
 

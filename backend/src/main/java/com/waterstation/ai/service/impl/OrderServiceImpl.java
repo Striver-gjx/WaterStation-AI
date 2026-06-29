@@ -84,6 +84,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setStatus("PENDING_PAYMENT");
         order.setPaidAmount(BigDecimal.ZERO);
+        order.setTotalAmount(BigDecimal.ZERO);
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         save(order);

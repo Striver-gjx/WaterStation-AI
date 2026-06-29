@@ -149,16 +149,17 @@ bash scripts/build-all.sh win
 ```
 
 构建产物：
-- `desktop/release/水站管理系统-Setup-1.0.0.exe` — NSIS 安装程序
+- `desktop/release/WaterStation-Setup-1.0.0.exe` — NSIS 安装程序
 
 #### 安装
 
-直接双击运行 `水站管理系统-Setup-1.0.0.exe`，安装程序自动处理：
-- 安装路径选择
-- 桌面快捷方式创建
-- 开始菜单注册
+直接双击运行 `WaterStation-Setup-1.0.0.exe`，按安装向导操作：
+- 选择安装路径（默认 `C:\Program Files\WaterStation\`）
+- 自动创建桌面快捷方式和开始菜单入口
+- 安装完成后首次启动约需 5-10 秒加载后端服务
 
-> Windows 安装无需额外命令，标准 NSIS 安装流程。
+> Windows SmartScreen 可能提示"未知发布者"，选择"更多信息" → "仍要运行"即可。
+> 如果 Windows 防火墙弹出询问（Java 监听端口），请选择"允许"。
 
 ---
 
@@ -246,8 +247,8 @@ WaterStation/
 - **数据库**：H2 文件数据库
 - **存储路径**：
   - 开发模式：`./data/waterstation.mv.db`
-  - macOS 桌面端：`~/Library/Application Support/水站管理系统/data/`
-  - Windows 桌面端：`%APPDATA%/水站管理系统/data/`
+  - macOS 桌面端：`~/Library/Application Support/waterstation-desktop/data/`
+  - Windows 桌面端：`C:\WaterStation\data\`
 - **备份目录**：`data/backups/YYYY-MM-DD/` （按日期自动归档）
 
 ### 数据导入导出

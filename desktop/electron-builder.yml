@@ -1,5 +1,5 @@
 appId: com.waterstation.desktop
-productName: "水站管理系统"
+productName: "WaterStation"
 directories:
   output: release
   buildResources: resources
@@ -42,12 +42,14 @@ mac:
         - "**/*"
 
 nsis:
-  oneClick: true
-  allowToChangeInstallationDirectory: false
+  oneClick: false
+  allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: "水站管理系统"
+  shortcutName: "WaterStation"
   unicode: true
+  include: build/installer.nsh
+  perMachine: true
 
 dmg:
   backgroundColor: "#ffffff"
